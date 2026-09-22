@@ -26,7 +26,9 @@ export const meta: Route.MetaFunction = () => {
 
 export async function loader({context}: Route.LoaderArgs) {
   try {
-    const data = await context.storefront.query(ALL_DIAMOND_PRODUCTS_QUERY);
+    const data = await context.storefront.query(ALL_DIAMOND_PRODUCTS_QUERY, {
+      cache: context.storefront.CacheShort(),
+    });
     const nodes = data?.products?.nodes || [];
     if (nodes.length > 0) {
       const liveProducts: DiamondProduct[] = nodes.map(mapShopifyProductToDiamond);

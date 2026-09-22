@@ -106,7 +106,7 @@ export function CompleteRingStage() {
 
   // Construct Line Item Custom Attributes for Shopify Cart
   const cartLineItem = {
-    merchandiseId: 'gid://shopify/ProductVariant/461609500728', // Shopify live variant or placeholder
+    merchandiseId: selectedDiamond.shopifyVariantId || selectedSetting.shopifyVariantId || 'gid://shopify/ProductVariant/64644086628721', // Ensure real Shopify variant ID is used
     quantity: 1,
     attributes: [
       {key: 'Type', value: 'Bespoke Diamond Engagement Ring'},
@@ -563,7 +563,7 @@ export function CompleteRingStage() {
                   open('cart');
                 }, 400);
               }}
-              className="w-full py-6 rounded-xl text-xs font-semibold uppercase tracking-widest bg-stone-950 hover:bg-stone-800 text-white shadow-lg cursor-pointer"
+              className="w-full h-12 rounded-xl text-xs font-semibold uppercase tracking-widest bg-stone-950 hover:bg-stone-800 text-white shadow-lg cursor-pointer"
             >
               {isAdding ? 'Adding Custom Ring...' : `Add Bespoke Ring to Bag • $${totalInvestment.toLocaleString()}`}
             </AddToCartButton>
@@ -573,7 +573,7 @@ export function CompleteRingStage() {
               variant="outline"
               size="lg"
               onClick={handleProceedToCheckout}
-              className="w-full py-6 rounded-xl text-xs font-semibold uppercase tracking-widest border-stone-900 text-stone-900 hover:bg-stone-100 transition-colors cursor-pointer"
+              className="w-full h-12 rounded-xl text-xs font-semibold uppercase tracking-widest border-stone-900 text-stone-900 hover:bg-stone-100 transition-colors cursor-pointer"
             >
               Instant Atelier Checkout &rarr;
             </Button>

@@ -44,7 +44,7 @@ export function DiamondProductCard({product}: DiamondProductCardProps) {
 
       {/* Image container */}
       <Link
-        to={`/products/${product.handle}?metal=${selectedMetal}`}
+        to={`/custom-ring?step=complete&product=${product.handle}&metal=${selectedMetal}`}
         className="block aspect-square overflow-hidden bg-stone-50 relative cursor-pointer"
       >
         <img
@@ -93,7 +93,7 @@ export function DiamondProductCard({product}: DiamondProductCardProps) {
 
           {/* Title */}
           <Link
-            to={`/products/${product.handle}?metal=${selectedMetal}`}
+            to={`/custom-ring?step=complete&product=${product.handle}&metal=${selectedMetal}`}
             className="block text-stone-900 font-serif text-base font-medium group-hover:text-amber-800 transition-colors line-clamp-1"
           >
             {product.title}
@@ -109,14 +109,14 @@ export function DiamondProductCard({product}: DiamondProductCardProps) {
             <Badge variant="outline" className="bg-stone-50 border-stone-200 text-stone-700 font-mono font-medium text-[11px] py-0 px-1.5">
               {diamond.carat} ct
             </Badge>
-            <Badge variant="outline" className="bg-stone-50 border-stone-200 text-stone-700 font-medium text-[11px] py-0 px-1.5">
-              Color {diamond.colorGrade}
+            <Badge variant="outline" className="bg-stone-50 border-stone-200 text-stone-700 text-[11px] py-0 px-1.5">
+              {diamond.cutGrade}
             </Badge>
-            <Badge variant="outline" className="bg-stone-50 border-stone-200 text-stone-700 font-medium text-[11px] py-0 px-1.5">
+            <Badge variant="outline" className="bg-stone-50 border-stone-200 text-stone-700 text-[11px] py-0 px-1.5">
+              {diamond.colorGrade} Color
+            </Badge>
+            <Badge variant="outline" className="bg-stone-50 border-stone-200 text-stone-700 text-[11px] py-0 px-1.5">
               {diamond.clarityGrade}
-            </Badge>
-            <Badge variant="outline" className="bg-stone-50 border-stone-200 text-stone-700 font-serif text-[11px] py-0 px-1.5">
-              {diamond.certification.lab}
             </Badge>
           </div>
         </div>
@@ -133,10 +133,10 @@ export function DiamondProductCard({product}: DiamondProductCardProps) {
           </div>
 
           <Link
-            to={`/products/${product.handle}?metal=${selectedMetal}`}
-            className={buttonVariants({size: 'sm', variant: 'default'}) + ' text-xs uppercase tracking-wide font-medium bg-stone-900 hover:bg-stone-800 text-white rounded'}
+            to={`/custom-ring?step=complete&product=${product.handle}&metal=${selectedMetal}`}
+            className={buttonVariants({size: 'sm', variant: 'default'})}
           >
-            Customize
+            Design &amp; Order
           </Link>
         </div>
       </div>

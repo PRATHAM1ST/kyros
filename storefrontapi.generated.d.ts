@@ -386,7 +386,9 @@ export type ShopifyDiamondProductFieldsFragment = Pick<
   | 'descriptionHtml'
   | 'vendor'
   | 'productType'
+  | 'tags'
 > & {
+  options: Array<Pick<StorefrontAPI.ProductOption, 'id' | 'name' | 'values'>>;
   featuredImage?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
   >;
@@ -403,7 +405,16 @@ export type ShopifyDiamondProductFieldsFragment = Pick<
       Pick<
         StorefrontAPI.ProductVariant,
         'id' | 'title' | 'availableForSale'
-      > & {price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>}
+      > & {
+        price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+        compareAtPrice?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+        >;
+        selectedOptions: Array<
+          Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+        >;
+        image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, 'url'>>;
+      }
     >;
   };
   shape?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
@@ -448,7 +459,11 @@ export type AllDiamondsFromShopifyQuery = {
         | 'descriptionHtml'
         | 'vendor'
         | 'productType'
+        | 'tags'
       > & {
+        options: Array<
+          Pick<StorefrontAPI.ProductOption, 'id' | 'name' | 'values'>
+        >;
         featuredImage?: StorefrontAPI.Maybe<
           Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
         >;
@@ -471,7 +486,16 @@ export type AllDiamondsFromShopifyQuery = {
             Pick<
               StorefrontAPI.ProductVariant,
               'id' | 'title' | 'availableForSale'
-            > & {price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>}
+            > & {
+              price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+              compareAtPrice?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+              >;
+              selectedOptions: Array<
+                Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+              >;
+              image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, 'url'>>;
+            }
           >;
         };
         shape?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
@@ -542,7 +566,11 @@ export type SingleDiamondByHandleQuery = {
       | 'descriptionHtml'
       | 'vendor'
       | 'productType'
+      | 'tags'
     > & {
+      options: Array<
+        Pick<StorefrontAPI.ProductOption, 'id' | 'name' | 'values'>
+      >;
       featuredImage?: StorefrontAPI.Maybe<
         Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
       >;
@@ -562,7 +590,16 @@ export type SingleDiamondByHandleQuery = {
           Pick<
             StorefrontAPI.ProductVariant,
             'id' | 'title' | 'availableForSale'
-          > & {price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>}
+          > & {
+            price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+            compareAtPrice?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+            >;
+            selectedOptions: Array<
+              Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+            >;
+            image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, 'url'>>;
+          }
         >;
       };
       shape?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
@@ -1071,11 +1108,11 @@ interface GeneratedQueryTypes {
     return: FooterQuery;
     variables: FooterQueryVariables;
   };
-  '#graphql\n  query AllDiamondsFromShopify {\n    products(first: 50, query: "product_type:\'Diamond Engagement Ring\'") {\n      nodes {\n        ...ShopifyDiamondProductFields\n      }\n    }\n  }\n  #graphql\n  fragment ShopifyDiamondProductFields on Product {\n    id\n    title\n    handle\n    description\n    descriptionHtml\n    vendor\n    productType\n    featuredImage {\n      url\n      altText\n      width\n      height\n    }\n    images(first: 8) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 10) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          amount\n          currencyCode\n        }\n      }\n    }\n    shape: metafield(namespace: "diamond_specs", key: "shape") { value }\n    carat: metafield(namespace: "diamond_specs", key: "carat") { value }\n    cutGrade: metafield(namespace: "diamond_specs", key: "cut_grade") { value }\n    colorGrade: metafield(namespace: "diamond_specs", key: "color_grade") { value }\n    clarityGrade: metafield(namespace: "diamond_specs", key: "clarity_grade") { value }\n    origin: metafield(namespace: "diamond_specs", key: "origin") { value }\n    certLab: metafield(namespace: "diamond_specs", key: "cert_lab") { value }\n    certNumber: metafield(namespace: "diamond_specs", key: "cert_number") { value }\n    laserInscription: metafield(namespace: "diamond_specs", key: "laser_inscription") { value }\n    tablePercentage: metafield(namespace: "diamond_specs", key: "table_percentage") { value }\n    depthPercentage: metafield(namespace: "diamond_specs", key: "depth_percentage") { value }\n    crownAngle: metafield(namespace: "diamond_specs", key: "crown_angle") { value }\n    pavilionAngle: metafield(namespace: "diamond_specs", key: "pavilion_angle") { value }\n    polish: metafield(namespace: "diamond_specs", key: "polish") { value }\n    symmetry: metafield(namespace: "diamond_specs", key: "symmetry") { value }\n    fluorescence: metafield(namespace: "diamond_specs", key: "fluorescence") { value }\n    measurementsMm: metafield(namespace: "diamond_specs", key: "measurements_mm") { value }\n    ratio: metafield(namespace: "diamond_specs", key: "ratio") { value }\n    settingStyle: metafield(namespace: "diamond_specs", key: "setting_style") { value }\n    bandWidthMm: metafield(namespace: "diamond_specs", key: "band_width_mm") { value }\n    prongStyle: metafield(namespace: "diamond_specs", key: "prong_style") { value }\n    fullSpecs: metafield(namespace: "diamond_specs", key: "full_specs_json") { value }\n  }\n\n': {
+  '#graphql\n  query AllDiamondsFromShopify {\n    products(first: 50, query: "product_type:\'Diamond Engagement Ring\'") {\n      nodes {\n        ...ShopifyDiamondProductFields\n      }\n    }\n  }\n  #graphql\n  fragment ShopifyDiamondProductFields on Product {\n    id\n    title\n    handle\n    description\n    descriptionHtml\n    vendor\n    productType\n    tags\n    options {\n      id\n      name\n      values\n    }\n    featuredImage {\n      url\n      altText\n      width\n      height\n    }\n    images(first: 12) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 20) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n        selectedOptions {\n          name\n          value\n        }\n        image {\n          url\n        }\n      }\n    }\n    shape: metafield(namespace: "diamond_specs", key: "shape") { value }\n    carat: metafield(namespace: "diamond_specs", key: "carat") { value }\n    cutGrade: metafield(namespace: "diamond_specs", key: "cut_grade") { value }\n    colorGrade: metafield(namespace: "diamond_specs", key: "color_grade") { value }\n    clarityGrade: metafield(namespace: "diamond_specs", key: "clarity_grade") { value }\n    origin: metafield(namespace: "diamond_specs", key: "origin") { value }\n    certLab: metafield(namespace: "diamond_specs", key: "cert_lab") { value }\n    certNumber: metafield(namespace: "diamond_specs", key: "cert_number") { value }\n    laserInscription: metafield(namespace: "diamond_specs", key: "laser_inscription") { value }\n    tablePercentage: metafield(namespace: "diamond_specs", key: "table_percentage") { value }\n    depthPercentage: metafield(namespace: "diamond_specs", key: "depth_percentage") { value }\n    crownAngle: metafield(namespace: "diamond_specs", key: "crown_angle") { value }\n    pavilionAngle: metafield(namespace: "diamond_specs", key: "pavilion_angle") { value }\n    polish: metafield(namespace: "diamond_specs", key: "polish") { value }\n    symmetry: metafield(namespace: "diamond_specs", key: "symmetry") { value }\n    fluorescence: metafield(namespace: "diamond_specs", key: "fluorescence") { value }\n    measurementsMm: metafield(namespace: "diamond_specs", key: "measurements_mm") { value }\n    ratio: metafield(namespace: "diamond_specs", key: "ratio") { value }\n    settingStyle: metafield(namespace: "diamond_specs", key: "setting_style") { value }\n    bandWidthMm: metafield(namespace: "diamond_specs", key: "band_width_mm") { value }\n    prongStyle: metafield(namespace: "diamond_specs", key: "prong_style") { value }\n    fullSpecs: metafield(namespace: "diamond_specs", key: "full_specs_json") { value }\n  }\n\n': {
     return: AllDiamondsFromShopifyQuery;
     variables: AllDiamondsFromShopifyQueryVariables;
   };
-  '#graphql\n  query SingleDiamondByHandle($handle: String!) {\n    product(handle: $handle) {\n      ...ShopifyDiamondProductFields\n    }\n  }\n  #graphql\n  fragment ShopifyDiamondProductFields on Product {\n    id\n    title\n    handle\n    description\n    descriptionHtml\n    vendor\n    productType\n    featuredImage {\n      url\n      altText\n      width\n      height\n    }\n    images(first: 8) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 10) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          amount\n          currencyCode\n        }\n      }\n    }\n    shape: metafield(namespace: "diamond_specs", key: "shape") { value }\n    carat: metafield(namespace: "diamond_specs", key: "carat") { value }\n    cutGrade: metafield(namespace: "diamond_specs", key: "cut_grade") { value }\n    colorGrade: metafield(namespace: "diamond_specs", key: "color_grade") { value }\n    clarityGrade: metafield(namespace: "diamond_specs", key: "clarity_grade") { value }\n    origin: metafield(namespace: "diamond_specs", key: "origin") { value }\n    certLab: metafield(namespace: "diamond_specs", key: "cert_lab") { value }\n    certNumber: metafield(namespace: "diamond_specs", key: "cert_number") { value }\n    laserInscription: metafield(namespace: "diamond_specs", key: "laser_inscription") { value }\n    tablePercentage: metafield(namespace: "diamond_specs", key: "table_percentage") { value }\n    depthPercentage: metafield(namespace: "diamond_specs", key: "depth_percentage") { value }\n    crownAngle: metafield(namespace: "diamond_specs", key: "crown_angle") { value }\n    pavilionAngle: metafield(namespace: "diamond_specs", key: "pavilion_angle") { value }\n    polish: metafield(namespace: "diamond_specs", key: "polish") { value }\n    symmetry: metafield(namespace: "diamond_specs", key: "symmetry") { value }\n    fluorescence: metafield(namespace: "diamond_specs", key: "fluorescence") { value }\n    measurementsMm: metafield(namespace: "diamond_specs", key: "measurements_mm") { value }\n    ratio: metafield(namespace: "diamond_specs", key: "ratio") { value }\n    settingStyle: metafield(namespace: "diamond_specs", key: "setting_style") { value }\n    bandWidthMm: metafield(namespace: "diamond_specs", key: "band_width_mm") { value }\n    prongStyle: metafield(namespace: "diamond_specs", key: "prong_style") { value }\n    fullSpecs: metafield(namespace: "diamond_specs", key: "full_specs_json") { value }\n  }\n\n': {
+  '#graphql\n  query SingleDiamondByHandle($handle: String!) {\n    product(handle: $handle) {\n      ...ShopifyDiamondProductFields\n    }\n  }\n  #graphql\n  fragment ShopifyDiamondProductFields on Product {\n    id\n    title\n    handle\n    description\n    descriptionHtml\n    vendor\n    productType\n    tags\n    options {\n      id\n      name\n      values\n    }\n    featuredImage {\n      url\n      altText\n      width\n      height\n    }\n    images(first: 12) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 20) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n        selectedOptions {\n          name\n          value\n        }\n        image {\n          url\n        }\n      }\n    }\n    shape: metafield(namespace: "diamond_specs", key: "shape") { value }\n    carat: metafield(namespace: "diamond_specs", key: "carat") { value }\n    cutGrade: metafield(namespace: "diamond_specs", key: "cut_grade") { value }\n    colorGrade: metafield(namespace: "diamond_specs", key: "color_grade") { value }\n    clarityGrade: metafield(namespace: "diamond_specs", key: "clarity_grade") { value }\n    origin: metafield(namespace: "diamond_specs", key: "origin") { value }\n    certLab: metafield(namespace: "diamond_specs", key: "cert_lab") { value }\n    certNumber: metafield(namespace: "diamond_specs", key: "cert_number") { value }\n    laserInscription: metafield(namespace: "diamond_specs", key: "laser_inscription") { value }\n    tablePercentage: metafield(namespace: "diamond_specs", key: "table_percentage") { value }\n    depthPercentage: metafield(namespace: "diamond_specs", key: "depth_percentage") { value }\n    crownAngle: metafield(namespace: "diamond_specs", key: "crown_angle") { value }\n    pavilionAngle: metafield(namespace: "diamond_specs", key: "pavilion_angle") { value }\n    polish: metafield(namespace: "diamond_specs", key: "polish") { value }\n    symmetry: metafield(namespace: "diamond_specs", key: "symmetry") { value }\n    fluorescence: metafield(namespace: "diamond_specs", key: "fluorescence") { value }\n    measurementsMm: metafield(namespace: "diamond_specs", key: "measurements_mm") { value }\n    ratio: metafield(namespace: "diamond_specs", key: "ratio") { value }\n    settingStyle: metafield(namespace: "diamond_specs", key: "setting_style") { value }\n    bandWidthMm: metafield(namespace: "diamond_specs", key: "band_width_mm") { value }\n    prongStyle: metafield(namespace: "diamond_specs", key: "prong_style") { value }\n    fullSpecs: metafield(namespace: "diamond_specs", key: "full_specs_json") { value }\n  }\n\n': {
     return: SingleDiamondByHandleQuery;
     variables: SingleDiamondByHandleQueryVariables;
   };

@@ -44,8 +44,13 @@ export async function loader({context, params}: Route.LoaderArgs) {
     const [singleData, allData] = await Promise.all([
       context.storefront.query(SINGLE_DIAMOND_PRODUCT_QUERY, {
         variables: {handle},
+        cache: context.storefront.CacheShort(),
       }),
-      context.storefront.query(ALL_DIAMOND_PRODUCTS_QUERY).catch(() => null),
+      context.storefront
+        .query(ALL_DIAMOND_PRODUCTS_QUERY, {
+          cache: context.storefront.CacheShort(),
+        })
+        .catch(() => null),
     ]);
 
     if (singleData?.product) {
@@ -268,10 +273,10 @@ export default function ProductRoute() {
                 </span>
               </div>
               <Link
-                to={`/custom-ring?step=diamond&settingId=setting-solitaire-signature`}
-                className="shrink-0 py-1.5 px-3 bg-amber-900 hover:bg-amber-800 text-white rounded-lg text-xs font-serif font-medium transition-colors cursor-pointer"
+                to={`/custom-ring?step=complete&product=${product.handle}&metal=${selectedMetal}`}
+                className="shrink-0 py-1.5 px-3 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-serif font-medium transition-colors cursor-pointer"
               >
-                Choose Diamond &rarr;
+                View Atelier Composition &rarr;
               </Link>
             </div>
 

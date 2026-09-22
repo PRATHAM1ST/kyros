@@ -208,6 +208,7 @@ export interface DiamondProduct {
   pricing: {
     settingPrice: number;
     defaultDiamondPrice: number;
+    centerDiamondPrice?: number;
     totalPrice: number;
     compareAtPrice?: number;
     currency: string;
@@ -261,6 +262,7 @@ export interface LooseDiamond {
   image: string;
   video360Url?: string;
   isBestseller?: boolean;
+  shopifyVariantId?: string;
 }
 
 export interface RingSetting {
@@ -282,6 +284,7 @@ export interface RingSetting {
   ringSizesAvailable: number[];
   images: Record<string, string>; // metalId -> image
   featuredOrder: number;
+  shopifyVariantId?: string;
 }
 
 export interface CustomRingSelection {

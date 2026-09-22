@@ -27,7 +27,7 @@ export function DiamondRingStepper() {
   const completeStepNum = 3;
 
   return (
-    <div className="diamond-ring-stepper sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm transition-all py-3 px-4 sm:px-6">
+    <div className="diamond-ring-stepper sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm transition-all py-3 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {/* STEP A: DIAMOND */}

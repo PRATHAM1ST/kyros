@@ -18,6 +18,17 @@ export const DEFAULT_DIAMOND_FILTERS: DiamondFilterState = {
   clarityGrades: [],
   origins: [],
   searchQuery: '',
+  labs: [],
+  reportNumberQuery: '',
+  tableMin: 53.0,
+  tableMax: 70.0,
+  depthMin: 58.0,
+  depthMax: 73.0,
+  ratioMin: 1.0,
+  ratioMax: 2.1,
+  polishGrades: [],
+  symmetryGrades: [],
+  fluorescenceGrades: [],
 };
 
 export function filterDiamondProducts(

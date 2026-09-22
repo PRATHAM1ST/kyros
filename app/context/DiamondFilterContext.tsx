@@ -36,6 +36,8 @@ import {
 } from '~/lib/diamond-filter';
 import {LOOSE_DIAMONDS, getLooseDiamondById} from '~/data/loose-diamonds';
 import {RING_SETTINGS, METALS_CATALOG, getRingSettingById, getMetalOptionById} from '~/data/ring-settings';
+import {DIAMOND_PRODUCTS, getDiamondProductByHandle} from '~/data/diamond-products';
+import {mapDiamondProductToRingSelection} from '~/lib/shopify-diamond-adapter';
 
 export const COLOR_ORDER: ColorGrade[] = ['D', 'E', 'F', 'G', 'H', 'I', 'J'];
 export const CLARITY_ORDER: ClarityGrade[] = [
@@ -200,19 +202,31 @@ export function DiamondProvider({
   const [flow, setFlow] = useState<'diamond-first' | 'setting-first'>(urlFlow);
 
   // --- 2. Selections from URL or Defaults ---
+  const urlProduct = searchParams.get('product') || searchParams.get('productHandle') || searchParams.get('handle');
+  const initialProductMatch = urlProduct
+    ? getDiamondProductByHandle(urlProduct) || DIAMOND_PRODUCTS.find((p) => p.id === urlProduct || p.handle === urlProduct)
+    : urlStage === 'complete'
+    ? DIAMOND_PRODUCTS[0]
+    : null;
+
+  const initialMapped = initialProductMatch ? mapDiamondProductToRingSelection(initialProductMatch) : null;
+
   const urlDiamondId = searchParams.get('diamondId');
   const [selectedDiamond, setSelectedDiamond] = useState<LooseDiamond | null>(() => {
-    return urlDiamondId ? getLooseDiamondById(urlDiamondId) || null : null;
+    if (urlDiamondId) return getLooseDiamondById(urlDiamondId) || null;
+    return initialMapped?.diamond || null;
   });
 
   const urlSettingId = searchParams.get('settingId');
   const [selectedSetting, setSelectedSetting] = useState<RingSetting | null>(() => {
-    return urlSettingId ? getRingSettingById(urlSettingId) || null : null;
+    if (urlSettingId) return getRingSettingById(urlSettingId) || null;
+    return initialMapped?.setting || null;
   });
 
   const urlMetalId = searchParams.get('metalId') || 'platinum-950';
   const [selectedMetal, setSelectedMetalOption] = useState<MetalOption>(() => {
-    return getMetalOptionById(urlMetalId);
+    if (urlMetalId) return getMetalOptionById(urlMetalId);
+    return initialMapped?.metalOption || getMetalOptionById('platinum-950');
   });
 
   const urlRingSize = parseFloat(searchParams.get('size') || '6.0');
@@ -230,6 +244,59 @@ export function DiamondProvider({
     text: searchParams.get('engraving') || '',
     font: (searchParams.get('engravingFont') as 'Script' | 'Serif' | 'Block') || 'Script',
   });
+
+  // Dynamic synchronization with searchParams on navigation
+  useEffect(() => {
+    const productParam = searchParams.get('product') || searchParams.get('productHandle') || searchParams.get('handle');
+    const metalParam = searchParams.get('metal') as PreciousMetal | null;
+    const metalIdParam = searchParams.get('metalId');
+    const stepParam = searchParams.get('step') as 'diamond' | 'settings' | 'complete' | null;
+
+    if (productParam) {
+      const p = getDiamondProductByHandle(productParam) || DIAMOND_PRODUCTS.find((dp) => dp.id === productParam || dp.handle === productParam);
+      if (p) {
+        const {diamond, setting, metalOption} = mapDiamondProductToRingSelection(p, metalParam || undefined);
+        setSelectedDiamond(diamond);
+        setSelectedSetting(setting);
+        if (metalIdParam) {
+          const m = getMetalOptionById(metalIdParam);
+          if (m) setSelectedMetalOption(m);
+        } else {
+          setSelectedMetalOption(metalOption);
+        }
+        if (stepParam) {
+          setStageInternal(stepParam);
+        } else {
+          setStageInternal('complete');
+        }
+        return;
+      }
+    }
+
+    const dId = searchParams.get('diamondId');
+    if (dId) {
+      const foundDia = getLooseDiamondById(dId);
+      if (foundDia) setSelectedDiamond(foundDia);
+    }
+
+    const sId = searchParams.get('settingId');
+    if (sId) {
+      const foundSet = getRingSettingById(sId);
+      if (foundSet) setSelectedSetting(foundSet);
+    }
+
+    if (metalIdParam) {
+      const m = getMetalOptionById(metalIdParam);
+      if (m) setSelectedMetalOption(m);
+    } else if (metalParam) {
+      const foundM = METALS_CATALOG.find((mo) => mo.metal === metalParam || mo.id.includes(metalParam));
+      if (foundM) setSelectedMetalOption(foundM);
+    }
+
+    if (stepParam && (stepParam === 'diamond' || stepParam === 'settings' || stepParam === 'complete')) {
+      setStageInternal(stepParam);
+    }
+  }, [searchParams]);
 
   // --- 3. Stage 1: Diamond Filters ---
   const [diamondFilters, setDiamondFilters] = useState<ExtendedDiamondFilterState>(() => {
@@ -745,7 +812,6 @@ export function DiamondProvider({
       filters,
       sortBy,
       activeFilterCount,
-      selectedMetal: legacyMetal,
       selectedRingSize,
       setFilters,
       setSortBy,
