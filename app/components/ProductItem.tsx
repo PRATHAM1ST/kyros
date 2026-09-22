@@ -1,10 +1,8 @@
 import {Link} from 'react-router';
 import {Image, Money} from '@shopify/hydrogen';
-import type {
-  ProductItemFragment,
-  CollectionItemFragment,
-  RecommendedProductFragment,
-} from 'storefrontapi.generated';
+type ProductItemFragment = any;
+type CollectionItemFragment = any;
+type RecommendedProductFragment = any;
 import {useVariantUrl} from '~/lib/variants';
 
 export function ProductItem({

@@ -3,6 +3,8 @@ import type {Route} from './+types/search';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {SearchForm} from '~/components/SearchForm';
 import {SearchResults} from '~/components/SearchResults';
+import {Input} from '~/components/ui/input';
+import {Button} from '~/components/ui/button';
 import {
   type RegularSearchReturn,
   type PredictiveSearchReturn,
@@ -14,7 +16,7 @@ import type {
 } from 'storefrontapi.generated';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Search`}];
+  return [{title: `Search Diamonds & Fine Jewelry | KYROS Haute Joaillerie`}];
 };
 
 export async function loader({request, context}: Route.LoaderArgs) {
@@ -45,17 +47,19 @@ export default function SearchPage() {
       <h1>Search</h1>
       <SearchForm>
         {({inputRef}) => (
-          <>
-            <input
+          <div className="flex items-center gap-2 max-w-md my-4">
+            <Input
               defaultValue={term}
               name="q"
-              placeholder="Search…"
+              placeholder="Search diamonds, rings, collections…"
               ref={inputRef}
               type="search"
+              className="bg-stone-50 border-stone-200"
             />
-            &nbsp;
-            <button type="submit">Search</button>
-          </>
+            <Button type="submit" variant="default" className="bg-stone-950 text-white hover:bg-stone-800 cursor-pointer">
+              Search
+            </Button>
+          </div>
         )}
       </SearchForm>
       {error && <p style={{color: 'red'}}>{error}</p>}

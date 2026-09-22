@@ -14,6 +14,8 @@ import {
   SearchFormPredictive,
 } from '~/components/SearchFormPredictive';
 import {SearchResultsPredictive} from '~/components/SearchResultsPredictive';
+import {Input} from '~/components/ui/input';
+import {Button} from '~/components/ui/button';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -77,19 +79,21 @@ function SearchAside() {
         <br />
         <SearchFormPredictive>
           {({fetchResults, goToSearch, inputRef}) => (
-            <>
-              <input
+            <div className="flex items-center gap-2">
+              <Input
                 name="q"
                 onChange={fetchResults}
                 onFocus={fetchResults}
-                placeholder="Search"
+                placeholder="Search diamonds, collections..."
                 ref={inputRef}
                 type="search"
                 list={queriesDatalistId}
+                className="bg-stone-50 border-stone-200 text-sm"
               />
-              &nbsp;
-              <button onClick={goToSearch}>Search</button>
-            </>
+              <Button onClick={goToSearch} variant="default" size="sm" className="bg-stone-950 text-white hover:bg-stone-800 cursor-pointer">
+                Search
+              </Button>
+            </div>
           )}
         </SearchFormPredictive>
 

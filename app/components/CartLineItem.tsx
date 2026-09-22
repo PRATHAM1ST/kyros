@@ -5,6 +5,7 @@ import {useVariantUrl} from '~/lib/variants';
 import {Link} from 'react-router';
 import {ProductPrice} from './ProductPrice';
 import {useAside} from './Aside';
+import {Button} from '~/components/ui/button';
 import type {
   CartApiQueryFragment,
   CartLineFragment,
@@ -109,30 +110,36 @@ function CartLineQuantity({line}: {line: CartLine}) {
   const nextQuantity = Number((quantity + 1).toFixed(0));
 
   return (
-    <div className="cart-line-quantity">
-      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
+    <div className="cart-line-quantity flex items-center gap-1.5 my-2">
+      <small className="text-xs text-stone-500 mr-1">Qty: {quantity}</small>
       <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
-        <button
+        <Button
+          type="submit"
+          variant="outline"
+          size="icon-xs"
           aria-label="Decrease quantity"
           disabled={quantity <= 1 || !!isOptimistic}
           name="decrease-quantity"
           value={prevQuantity}
+          className="h-6 w-6 rounded border-stone-200"
         >
-          <span>&#8722; </span>
-        </button>
+          <span>&#8722;</span>
+        </Button>
       </CartLineUpdateButton>
-      &nbsp;
       <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
-        <button
+        <Button
+          type="submit"
+          variant="outline"
+          size="icon-xs"
           aria-label="Increase quantity"
           name="increase-quantity"
           value={nextQuantity}
           disabled={!!isOptimistic}
+          className="h-6 w-6 rounded border-stone-200"
         >
           <span>&#43;</span>
-        </button>
+        </Button>
       </CartLineUpdateButton>
-      &nbsp;
       <CartLineRemoveButton lineIds={[lineId]} disabled={!!isOptimistic} />
     </div>
   );
@@ -157,9 +164,15 @@ function CartLineRemoveButton({
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
-      <button disabled={disabled} type="submit">
+      <Button
+        disabled={disabled}
+        type="submit"
+        variant="ghost"
+        size="xs"
+        className="text-stone-400 hover:text-destructive text-xs ml-2 cursor-pointer"
+      >
         Remove
-      </button>
+      </Button>
     </CartForm>
   );
 }

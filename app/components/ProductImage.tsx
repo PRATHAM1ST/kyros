@@ -1,4 +1,4 @@
-import type {ProductVariantFragment} from 'storefrontapi.generated';
+type ProductVariantFragment = any;
 import {Image} from '@shopify/hydrogen';
 
 export function ProductImage({

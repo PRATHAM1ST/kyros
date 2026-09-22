@@ -7,6 +7,8 @@ import {
 } from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
+import {Button} from '~/components/ui/button';
+import {Badge} from '~/components/ui/badge';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -23,11 +25,12 @@ export function Header({
   cart,
   publicStoreDomain,
 }: HeaderProps) {
-  const {shop, menu} = header;
+  const {menu} = header;
   return (
     <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
+      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end className="flex flex-col items-center">
+        <strong className="font-serif tracking-[0.25em] text-lg font-bold">KYROS</strong>
+        <span className="text-[9px] tracking-[0.3em] uppercase text-stone-500 font-serif">Haute Joaillerie</span>
       </NavLink>
       <HeaderMenu
         menu={menu}
@@ -118,21 +121,29 @@ function HeaderCtas({
 function HeaderMenuMobileToggle() {
   const {open} = useAside();
   return (
-    <button
-      className="header-menu-mobile-toggle reset"
+    <Button
+      variant="ghost"
+      size="icon-sm"
+      className="header-menu-mobile-toggle reset cursor-pointer"
       onClick={() => open('mobile')}
+      aria-label="Open navigation menu"
     >
       <h3>☰</h3>
-    </button>
+    </Button>
   );
 }
 
 function SearchToggle() {
   const {open} = useAside();
   return (
-    <button className="reset" onClick={() => open('search')}>
+    <Button
+      variant="ghost"
+      size="sm"
+      className="reset font-normal hover:bg-transparent cursor-pointer"
+      onClick={() => open('search')}
+    >
       Search
-    </button>
+    </Button>
   );
 }
 
@@ -153,8 +164,12 @@ function CartBadge({count}: {count: number}) {
           url: window.location.href || '',
         } as CartViewPayload);
       }}
+      className="inline-flex items-center gap-1.5"
     >
-      Cart <span aria-label={`(items: ${count})`}>{count}</span>
+      <span>Cart</span>
+      <Badge variant="secondary" className="h-4 px-1.5 text-[10px] font-mono min-w-4 text-center justify-center">
+        <span aria-label={`(items: ${count})`}>{count}</span>
+      </Badge>
     </a>
   );
 }
@@ -182,36 +197,36 @@ const FALLBACK_HEADER_MENU = {
       id: 'gid://shopify/MenuItem/461609500728',
       resourceId: null,
       tags: [],
-      title: 'Collections',
+      title: 'Engagement Rings',
       type: 'HTTP',
-      url: '/collections',
+      url: '/collections/all',
       items: [],
     },
     {
       id: 'gid://shopify/MenuItem/461609533496',
       resourceId: null,
       tags: [],
-      title: 'Blog',
+      title: 'Round Solitaire',
       type: 'HTTP',
-      url: '/blogs/journal',
+      url: '/collections/all?shape=Round',
       items: [],
     },
     {
       id: 'gid://shopify/MenuItem/461609566264',
       resourceId: null,
       tags: [],
-      title: 'Policies',
+      title: 'Oval Cut',
       type: 'HTTP',
-      url: '/policies',
+      url: '/collections/all?shape=Oval',
       items: [],
     },
     {
       id: 'gid://shopify/MenuItem/461609599032',
-      resourceId: 'gid://shopify/Page/92591030328',
+      resourceId: null,
       tags: [],
-      title: 'About',
-      type: 'PAGE',
-      url: '/pages/about',
+      title: 'The 4Cs Guide',
+      type: 'HTTP',
+      url: '/#diamond-shapes',
       items: [],
     },
   ],

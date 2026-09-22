@@ -3,6 +3,10 @@ import type {CartLayout} from '~/components/CartMain';
 import {CartForm, Money, type OptimisticCart} from '@shopify/hydrogen';
 import {useEffect, useId, useRef, useState} from 'react';
 import {useFetcher} from 'react-router';
+import {Button, buttonVariants} from '~/components/ui/button';
+import {Input} from '~/components/ui/input';
+import {Separator} from '~/components/ui/separator';
+import {cn} from '~/lib/utils';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;
@@ -41,6 +45,7 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
         giftCardHeadingId={giftCardHeadingId}
         giftCardInputId={giftCardInputId}
       />
+      <Separator className="my-3" />
       <CartCheckoutActions checkoutUrl={cart?.checkoutUrl} />
     </div>
   );
@@ -50,11 +55,17 @@ function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
   if (!checkoutUrl) return null;
 
   return (
-    <div>
-      <a href={checkoutUrl} target="_self">
-        <p>Continue to Checkout &rarr;</p>
+    <div className="pt-2">
+      <a
+        href={checkoutUrl}
+        target="_self"
+        className={cn(
+          buttonVariants({size: 'lg'}),
+          'block w-full text-center bg-stone-950 hover:bg-stone-800 text-white py-3.5 px-4 rounded-lg text-xs uppercase tracking-widest font-semibold cursor-pointer transition-colors',
+        )}
+      >
+        Continue to Checkout &rarr;
       </a>
-      <br />
     </div>
   );
 }
@@ -81,15 +92,14 @@ function CartDiscounts({
           <dt id={discountsHeadingId}>Discounts</dt>
           <UpdateDiscountForm>
             <div
-              className="cart-discount"
+              className="cart-discount flex items-center gap-2 mt-1"
               role="group"
               aria-labelledby={discountsHeadingId}
             >
-              <code>{codes?.join(', ')}</code>
-              &nbsp;
-              <button type="submit" aria-label="Remove discount">
+              <code className="bg-stone-100 px-2 py-0.5 rounded text-xs">{codes?.join(', ')}</code>
+              <Button type="submit" variant="ghost" size="xs" aria-label="Remove discount" className="text-destructive hover:text-destructive">
                 Remove
-              </button>
+              </Button>
             </div>
           </UpdateDiscountForm>
         </div>
@@ -97,20 +107,20 @@ function CartDiscounts({
 
       {/* Show an input to apply a discount */}
       <UpdateDiscountForm discountCodes={codes}>
-        <div>
+        <div className="flex items-center gap-2 mt-2">
           <label htmlFor={discountCodeInputId} className="sr-only">
             Discount code
           </label>
-          <input
+          <Input
             id={discountCodeInputId}
             type="text"
             name="discountCode"
             placeholder="Discount code"
+            className="h-8 text-xs bg-stone-50"
           />
-          &nbsp;
-          <button type="submit" aria-label="Apply discount code">
+          <Button type="submit" variant="outline" size="sm" aria-label="Apply discount code">
             Apply
-          </button>
+          </Button>
         </div>
       </UpdateDiscountForm>
     </section>
@@ -221,25 +231,27 @@ function CartGiftCard({
       )}
 
       <AddGiftCardForm fetcherKey="gift-card-add">
-        <div>
+        <div className="flex items-center gap-2 mt-2">
           <label htmlFor={giftCardInputId} className="sr-only">
             Gift card code
           </label>
-          <input
+          <Input
             id={giftCardInputId}
             type="text"
             name="giftCardCode"
             placeholder="Gift card code"
             ref={giftCardCodeInput}
+            className="h-8 text-xs bg-stone-50"
           />
-          &nbsp;
-          <button
+          <Button
             type="submit"
+            variant="outline"
+            size="sm"
             disabled={giftCardAddFetcher.state !== 'idle'}
             aria-label="Apply gift card code"
           >
             Apply
-          </button>
+          </Button>
         </div>
       </AddGiftCardForm>
     </section>
@@ -286,15 +298,17 @@ function RemoveGiftCardForm({
       }}
     >
       {children}
-      &nbsp;
-      <button
+      <Button
         type="submit"
+        variant="ghost"
+        size="xs"
         aria-label={`Remove gift card ending in ${lastCharacters}`}
         onClick={onRemoveClick}
         ref={buttonRef}
+        className="text-destructive hover:text-destructive"
       >
         Remove
-      </button>
+      </Button>
     </CartForm>
   );
 }

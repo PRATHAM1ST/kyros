@@ -1,0 +1,53 @@
+We will be having a systematic flow for the whole approach of this diamond selection plan. We have 3 stages to make a diamond ring (diamond selection -> Settings -> Complete the ring) each of them should be one after another but for settings and diamond selection its totally possible to be done one after another or one after another. So make a ui approach for that.
+
+
+Diamond selection
+- There can be a section of natural and lab grown diamond (only 2 for now as a tab selection) 
+- there will be dynamic filters on what all things do we want to have in our diamonds
+- shape (selecetion using illustration icons)
+- carat using slider and input ranges
+- colors
+- clarity
+- cut (ideal, excellent, vvery good, good)
+- lab ([gia, igi, ags] in natural and  [igi, gia] in lab)
+- price range
+- search by report number
+- table with percentage slider
+- depth
+- ratio
+- polish
+- symmetry
+- fluorenscence
+
+Settings
+- we will have option to do one thing at a time like (setting style, metal, shape, price) or view all at once to do
+- setting style should have illustration for the shape of rings using svgs
+- metal shouldd have color coded metals like multiple karat of gold (white, rose, yellow) and platinum (9k, 14k, 18k, 22k, 24k)
+- then we have shapes of diamond again
+- price range slider
+
+Complete the ring
+- after everything is done show all the filters and variance that were added and everything about the diamond, it is changable everything color shape setting everything
+- and then add ring size dropdown
+- prong type if available
+- band width dropdown
+- and engraving text input field 
+
+
+global
+- all the range sliders should have sliders based on stepper approach or smooth range depending on the type
+- all sliders should have min and max input fields too to have cutom range slider
+- use shadcn components only
+- everythiong should be in a context so that everything have global state of choosing
+- every siungle thing should be there in the product detail and based on that the sliders and all things should work nothing outside of it
+- make an optimistic approach to all the problems that we have
+- use shopify api all the time for everything do as much ssr as possible
+- use url query approiach so that when i comeback everything is there at place
+- use variance param to know which all properties have been selected and is being used
+- make sure to use premium clean and serif font combo theme approach for ui and good amount of spacing, premium site and mobile first approach too
+- the flow should be straight forward for this
+- Even the cart should have everything in it
+- use less text approach and much more numeric and icon friendly
+- based on this product should have category and variance  and other properties in them
+- show product cards in a -premium way like its something so special and premium make an ease for the user to just go through them
+- also at the end there should be a checkout page too
