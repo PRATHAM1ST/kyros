@@ -13,7 +13,8 @@ export type DiamondShape =
   | 'Pear'
   | 'Princess'
   | 'Asscher'
-  | 'Marquise';
+  | 'Marquise'
+  | 'Heart';
 
 export type CutGrade =
   | 'Super Ideal (Hearts & Arrows)'
@@ -42,22 +43,41 @@ export type ClarityGrade =
   | 'SI1'
   | 'SI2';
 
-export type PolishGrade = 'Excellent' | 'Very Good' | 'Good';
-export type SymmetryGrade = 'Excellent' | 'Very Good' | 'Good';
-export type FluorescenceGrade = 'None' | 'Faint' | 'Medium Blue' | 'Strong Blue';
+export type PolishGrade = 'Ideal' | 'Excellent' | 'Very Good' | 'Good';
+export type SymmetryGrade = 'Ideal' | 'Excellent' | 'Very Good' | 'Good';
+export type FluorescenceGrade = 'None' | 'Faint' | 'Medium' | 'Strong';
 export type CuletGrade = 'None' | 'Very Small' | 'Small' | 'Medium';
 
 export type DiamondOrigin =
   | 'Natural Mined (Conflict-Free)'
   | 'Lab-Grown (Renewable Type IIa)';
 
-export type LabCertification = 'GIA' | 'IGI' | 'GCAL';
+export type LabCertification = 'GIA' | 'IGI' | 'AGS' | 'GCAL';
 
 export type PreciousMetal =
   | 'platinum'
   | '18k-yellow-gold'
   | '18k-rose-gold'
   | '18k-white-gold';
+
+export type PreciousMetalType =
+  | 'platinum'
+  | 'yellow-gold'
+  | 'white-gold'
+  | 'rose-gold';
+
+export type MetalKarat = '9k' | '14k' | '18k' | '22k' | '24k' | '950';
+
+export interface MetalOption {
+  id: string; // e.g. '18k-yellow-gold'
+  metal: PreciousMetalType;
+  karat: MetalKarat;
+  name: string; // e.g. '18k Yellow Gold'
+  shortName: string; // e.g. '18k YG'
+  hexColor: string;
+  purity: string; // e.g. '75.0% Au'
+  priceAdjustment: number; // e.g. +350
+}
 
 export type SettingStyle =
   | 'solitaire'
@@ -215,6 +235,70 @@ export interface DiamondProduct {
   shopifyVariantId?: string;
 }
 
+export interface LooseDiamond {
+  id: string;
+  stockNumber: string;
+  origin: 'natural' | 'lab-grown';
+  shape: DiamondShape;
+  carat: number;
+  cutGrade: CutGrade;
+  colorGrade: ColorGrade;
+  clarityGrade: ClarityGrade;
+  certification: {
+    lab: 'GIA' | 'IGI' | 'AGS';
+    certificateNumber: string;
+    issueDate: string;
+    laserInscription: string;
+    reportUrl?: string;
+  };
+  pricing: {
+    price: number;
+    compareAtPrice?: number;
+  };
+  proportions: DiamondProportions;
+  finish: DiamondFinish;
+  measurements: DiamondMeasurements;
+  image: string;
+  video360Url?: string;
+  isBestseller?: boolean;
+}
+
+export interface RingSetting {
+  id: string;
+  handle: string;
+  title: string;
+  subtitle: string;
+  styleCategory: SettingStyle;
+  description: string;
+  basePrice: number;
+  availableMetals: MetalOption[];
+  defaultMetal: MetalOption;
+  compatibleShapes: DiamondShape[];
+  prongCount: number;
+  prongStyles: string[];
+  defaultProngStyle: string;
+  bandWidthsMm: number[];
+  defaultBandWidthMm: number;
+  ringSizesAvailable: number[];
+  images: Record<string, string>; // metalId -> image
+  featuredOrder: number;
+}
+
+export interface CustomRingSelection {
+  stage: 'diamond' | 'settings' | 'complete';
+  flow: 'diamond-first' | 'setting-first';
+  diamond: LooseDiamond | null;
+  setting: RingSetting | null;
+  metal: MetalOption;
+  ringSize: number;
+  prongStyle: string;
+  bandWidthMm: number;
+  engraving: {
+    text: string;
+    font: 'Script' | 'Serif' | 'Block';
+  };
+}
+
 export interface DiamondFilterState {
   originTab: 'all' | 'natural' | 'lab-grown';
   shapes: DiamondShape[];
@@ -229,6 +313,30 @@ export interface DiamondFilterState {
   clarityGrades: ClarityGrade[];
   origins: DiamondOrigin[];
   searchQuery?: string;
+
+  // Extended Advanced Gemological Filters
+  labs: ('GIA' | 'IGI' | 'AGS')[];
+  reportNumberQuery?: string;
+  tableMin: number;
+  tableMax: number;
+  depthMin: number;
+  depthMax: number;
+  ratioMin: number;
+  ratioMax: number;
+  polishGrades: PolishGrade[];
+  symmetryGrades: SymmetryGrade[];
+  fluorescenceGrades: FluorescenceGrade[];
+}
+
+export interface SettingFilterState {
+  styles: SettingStyle[];
+  metalTypes: PreciousMetalType[];
+  karats: MetalKarat[];
+  shapes: DiamondShape[];
+  priceMin: number;
+  priceMax: number;
+  viewMode: 'guided' | 'all';
+  guidedStep: number;
 }
 
 export type DiamondSortOption =
@@ -238,3 +346,4 @@ export type DiamondSortOption =
   | 'carat-desc'
   | 'carat-asc'
   | 'cut-desc';
+

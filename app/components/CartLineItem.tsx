@@ -73,6 +73,24 @@ export function CartLineItem({
               </li>
             ))}
           </ul>
+
+          {/* Bespoke Ring Gemological & Setting Custom Attributes */}
+          {line.attributes && line.attributes.length > 0 && (
+            <div className="cart-line-custom-attributes my-2 p-2 bg-stone-50 rounded-lg border border-stone-200 text-[11px] space-y-1">
+              <span className="text-[10px] uppercase tracking-wider text-amber-900 font-serif font-bold block">
+                Bespoke Atelier Specifications
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0.5 text-stone-600 font-sans">
+                {line.attributes.map((attr) => (
+                  <div key={attr.key} className="truncate">
+                    <span className="text-stone-400">{attr.key}:</span>{' '}
+                    <strong className="text-stone-800">{attr.value}</strong>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <CartLineQuantity line={line} />
         </div>
       </div>

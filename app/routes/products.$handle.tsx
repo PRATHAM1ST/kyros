@@ -257,6 +257,24 @@ export default function ProductRoute() {
               initialMetal={selectedMetal}
             />
 
+            {/* Link to 3-Stage Custom Ring Atelier */}
+            <div className="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-xl flex items-center justify-between">
+              <div>
+                <span className="text-[10px] uppercase tracking-wider text-amber-900 font-serif font-bold block">
+                  Custom Ring Atelier
+                </span>
+                <span className="text-[11px] text-stone-600 font-light">
+                  Pair this setting with certified loose diamonds of any carat, color, or shape.
+                </span>
+              </div>
+              <Link
+                to={`/custom-ring?step=diamond&settingId=setting-solitaire-signature`}
+                className="shrink-0 py-1.5 px-3 bg-amber-900 hover:bg-amber-800 text-white rounded-lg text-xs font-serif font-medium transition-colors cursor-pointer"
+              >
+                Choose Diamond &rarr;
+              </Link>
+            </div>
+
             {/* Editorial Craftsmanship Description */}
             <div className="pt-6 border-t border-stone-200">
               <h3 className="text-xs uppercase tracking-wider font-semibold text-stone-400 mb-2">

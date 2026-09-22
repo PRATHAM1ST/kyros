@@ -70,6 +70,17 @@ export function HeaderMenu({
           Home
         </NavLink>
       )}
+      <NavLink
+        className="header-menu-item font-serif font-semibold text-amber-900 flex items-center gap-1"
+        end
+        onClick={close}
+        prefetch="intent"
+        style={activeLinkStyle}
+        to="/custom-ring"
+      >
+        <span className="text-amber-700">✦</span>
+        <span>Custom Ring Atelier</span>
+      </NavLink>
       {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
         if (!item.url) return null;
 

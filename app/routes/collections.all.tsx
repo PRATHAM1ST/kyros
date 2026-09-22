@@ -84,6 +84,27 @@ export default function CollectionsAll() {
           <p className="text-xs sm:text-sm text-stone-500 font-light leading-relaxed">
             Every creation is bespoke-crafted to order. Filter across diamond silhouettes, rare carat weights, optical cut proportions, and precious metal bands.
           </p>
+
+          {/* 3-Stage Bespoke Ring Builder Banner */}
+          <div className="mt-6 p-4 bg-stone-900 text-white rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md text-left">
+            <div className="space-y-1">
+              <div className="flex items-center space-x-2">
+                <span className="text-amber-400 text-sm">✦</span>
+                <span className="text-xs uppercase tracking-widest text-amber-200 font-serif font-bold">
+                  Systematic 3-Stage Bespoke Ring Atelier
+                </span>
+              </div>
+              <p className="text-xs text-stone-300 font-light max-w-md">
+                Build your bespoke ring one step at a time: Choose a certified diamond or setting in flexible order, customize sizing &amp; laser engraving, and inspect transparent atelier pricing.
+              </p>
+            </div>
+            <a
+              href="/custom-ring"
+              className="shrink-0 py-2.5 px-5 bg-amber-400 hover:bg-amber-300 text-stone-950 font-serif font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow cursor-pointer"
+            >
+              Start Bespoke Journey &rarr;
+            </a>
+          </div>
         </div>
 
         {/* Real-time Multi-attribute Filter and Sort Bar connected to Global Context */}

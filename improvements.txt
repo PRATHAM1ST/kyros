@@ -1,0 +1,14 @@
+- right now the the catalog and custom rings are different add a route at top for this and the catalog when selected a ring should show the end process of the pick ring thing so show everyselection and everythign there too
+- right now there is not much data add more shopify data for each and every variant and add a lot of it and make it make sense
+- use Playfair Display + Source Sans Pro as fonts
+- use thsese color pallete 	Hex	RGB
+#f2c94c	(242,201,76)
+#f6f2e9	(246,242,233)
+#8f9e7a	(143,158,122)
+#b7b2a8	(183,178,168)
+#2a2a2a	(42,42,42)
+- cart functionality is not working make that too 
+- all the data should be comming from shopify api only and no where else thats the only source of truth
+- add caching for better performance too
+- use lenis rect for smooth scroll and add good animations for all
+- buttons and cards and all the components dont have good spacing use the default spcaing given from shadcn dont use your own
