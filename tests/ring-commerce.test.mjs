@@ -182,3 +182,56 @@ test('structurally invalid diamond or setting metadata is excluded', () => {
     null,
   );
 });
+test('catalogue rings resolve their exact Shopify component products', () => {
+  const ringSpecs = {
+      ...LOOSE_DIAMONDS[0],
+      id: 'ring',
+      handle: 'ring',
+      diamond: LOOSE_DIAMONDS[0],
+      setting: {
+        ...RING_SETTINGS[0],
+        styleCategory: 'solitaire',
+        compatibleShapes: ['Round'],
+        ringSizesAvailable: [6],
+        prongStyles: ['Claw Prongs'],
+        prongStyle: 'Claw Prongs',
+        bandWidthsMm: [1.8],
+        bandWidthMm: 1.8,
+      },
+      pricing: {
+        settingPrice: 100,
+        defaultDiamondPrice: 500,
+        totalPrice: 600,
+        currency: 'USD',
+      },
+      caratOptions: [],
+  };
+  const ring = product('ring', ringSpecs, [variant('ring-v', '600')]);
+  const standaloneDiamond = product(
+    'standalone',
+    {kind: 'diamond', diamond: LOOSE_DIAMONDS[0]},
+    [variant('d-v', '500')],
+  );
+  const standaloneSetting = product(
+    'standalone-setting',
+    {
+      kind: 'setting',
+      setting: {
+        ...RING_SETTINGS[0],
+        styleCategory: 'solitaire',
+        compatibleShapes: ['Round'],
+        ringSizesAvailable: [6],
+        prongStyles: ['Claw Prongs'],
+        bandWidthsMm: [1.8],
+      },
+    },
+    [variant('s-v', '100')],
+  );
+  const restored = selectionFromUrl(
+    [ring, standaloneDiamond, standaloneSetting],
+    new URLSearchParams({product: 'ring', variant: 'ring-v', size: '6'}),
+  );
+  assert.equal(restored.diamond.id, 'standalone');
+  assert.equal(restored.setting.id, 'standalone-setting');
+  assert.equal(restored.variants[0].id, 'ring-v');
+});

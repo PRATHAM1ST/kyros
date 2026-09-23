@@ -151,14 +151,34 @@ function Chips({
   values,
   filterKey,
   colors,
+  selectedValues,
 }: {
   label: string;
   values: string[];
   filterKey: string;
   colors?: Record<string, string>;
+  selectedValues?: string[];
 }) {
   const {params, update} = useRingBuilder();
-  const selected = (params.get(filterKey) || '').split(',');
+  const filterSelected = (params.get(filterKey) || '')
+    .split(',')
+    .filter(Boolean);
+  const linkedFilterKey =
+    filterKey === 'd-shape'
+      ? 's-shape'
+      : filterKey === 's-shape'
+        ? 'd-shape'
+        : undefined;
+  const linkedSelected = linkedFilterKey
+    ? (params.get(linkedFilterKey) || '').split(',').filter(Boolean)
+    : [];
+  const editableSelected = filterSelected.length
+    ? filterSelected
+    : linkedSelected;
+  const selected = selectedValues ?? [
+    ...new Set([...filterSelected, ...linkedSelected]),
+  ];
+  const shapeFilter = filterKey.endsWith('shape');
   return (
     <div className="space-y-2">
       <p className="text-sm font-medium">{label}</p>
@@ -167,19 +187,37 @@ function Chips({
           <Button
             key={v}
             size="sm"
-            variant={selected.includes(v) ? 'default' : 'outline'}
+            variant={
+              shapeFilter
+                ? 'ghost'
+                : selected.includes(v)
+                  ? 'default'
+                  : 'outline'
+            }
+            className={
+              shapeFilter
+                ? `h-auto min-w-16 flex-col gap-1 px-2 py-2 text-xs ${
+                    selected.includes(v)
+                      ? 'bg-primary/10 text-primary ring-1 ring-primary'
+                      : 'text-foreground hover:bg-primary/5'
+                  }`
+                : undefined
+            }
             aria-pressed={selected.includes(v)}
-            onClick={() =>
+            onClick={() => {
+              const next = (
+                editableSelected.includes(v)
+                  ? editableSelected.filter((s) => s !== v)
+                  : [...editableSelected, v]
+              ).join(',');
               update(
                 {
-                  [filterKey]: (selected.includes(v)
-                    ? selected.filter((s) => s !== v)
-                    : [...selected.filter(Boolean), v]
-                  ).join(','),
+                  [filterKey]: next,
+                  ...(linkedFilterKey ? {[linkedFilterKey]: next} : {}),
                 },
                 true,
-              )
-            }
+              );
+            }}
           >
             {colors?.[v] && (
               <span
@@ -371,7 +409,7 @@ function DiamondSelection() {
         .includes((b.params.get('d-report') || '').trim().toLowerCase())
     );
   });
-  const sort = b.params.get('d-sort') || 'Featured';
+  const sort = b.params.get('sort') || b.params.get('d-sort') || 'Featured';
   const limit = Math.max(
     12,
     Math.min(results.length, Number(b.params.get('d-limit')) || 12),
@@ -390,6 +428,8 @@ function DiamondSelection() {
       diamondId: p.id,
       diamondVariant: getVariant(p)?.id || null,
       product: null,
+      variant: b.ring ? b.variant?.id || null : null,
+      settingVariant: b.settingVariant?.id || null,
       step: b.setting ? 'complete' : 'settings',
     });
   }
@@ -422,10 +462,10 @@ function DiamondSelection() {
       >
         {filtersOpen ? 'Hide filters' : 'Filter diamonds'}
       </Button>
-      <div className="grid items-start gap-8 lg:grid-cols-[280px_1fr]">
+      <div className="space-y-8">
         <Card
           id="diamond-filters"
-          className={`shadow-none ${filtersOpen ? '' : 'hidden lg:flex'}`}
+          className={`shadow-none ${filtersOpen ? '' : 'hidden lg:block'}`}
         >
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -437,7 +477,12 @@ function DiamondSelection() {
                   b.update(
                     Object.fromEntries(
                       [...b.params.keys()]
-                        .filter((k) => k.startsWith('d-'))
+                        .filter(
+                          (k) =>
+                            k.startsWith('d-') ||
+                            k.startsWith('s-') ||
+                            k === 'sort',
+                        )
                         .map((k): [string, null] => [k, null]),
                     ),
                   )
@@ -447,7 +492,7 @@ function DiamondSelection() {
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="grid gap-x-10 gap-y-8 md:grid-cols-2 xl:grid-cols-3">
             <Chips
               label="Shape"
               values={details.map((d) => d.shape)}
@@ -494,48 +539,54 @@ function DiamondSelection() {
               value={b.params.get('d-report') || ''}
               onChange={(e) => b.update({'d-report': e.target.value}, true)}
             />
-            <Accordion>
-              <AccordionItem value="advanced">
-                <AccordionTrigger>Advanced specifications</AccordionTrigger>
-                <AccordionContent>
-                  <div className="mt-6 space-y-6">
-                    <Range
-                      label="Table (%)"
-                      values={details.map((d) => d.proportions.tablePercentage)}
-                      filterKey="d-table"
-                      step={0.1}
-                    />
-                    <Range
-                      label="Depth (%)"
-                      values={details.map((d) => d.proportions.depthPercentage)}
-                      filterKey="d-depth"
-                      step={0.1}
-                    />
-                    <Range
-                      label="Length / width"
-                      values={details.map((d) => d.measurements.ratio)}
-                      filterKey="d-ratio"
-                      step={0.01}
-                    />
-                    <Chips
-                      label="Polish"
-                      values={details.map((d) => d.finish.polish)}
-                      filterKey="d-polish"
-                    />
-                    <Chips
-                      label="Symmetry"
-                      values={details.map((d) => d.finish.symmetry)}
-                      filterKey="d-symmetry"
-                    />
-                    <Chips
-                      label="Fluorescence"
-                      values={details.map((d) => d.finish.fluorescence)}
-                      filterKey="d-fluorescence"
-                    />
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <div className="md:col-span-2 xl:col-span-3">
+              <Accordion>
+                <AccordionItem value="advanced">
+                  <AccordionTrigger>Advanced filter</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="mt-6 space-y-6">
+                      <Range
+                        label="Table (%)"
+                        values={details.map(
+                          (d) => d.proportions.tablePercentage,
+                        )}
+                        filterKey="d-table"
+                        step={0.1}
+                      />
+                      <Range
+                        label="Depth (%)"
+                        values={details.map(
+                          (d) => d.proportions.depthPercentage,
+                        )}
+                        filterKey="d-depth"
+                        step={0.1}
+                      />
+                      <Range
+                        label="Length / width"
+                        values={details.map((d) => d.measurements.ratio)}
+                        filterKey="d-ratio"
+                        step={0.01}
+                      />
+                      <Chips
+                        label="Polish"
+                        values={details.map((d) => d.finish.polish)}
+                        filterKey="d-polish"
+                      />
+                      <Chips
+                        label="Symmetry"
+                        values={details.map((d) => d.finish.symmetry)}
+                        filterKey="d-symmetry"
+                      />
+                      <Chips
+                        label="Fluorescence"
+                        values={details.map((d) => d.finish.fluorescence)}
+                        filterKey="d-fluorescence"
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
           </CardContent>
         </Card>
         <div>
@@ -552,7 +603,7 @@ function DiamondSelection() {
                   'Price: low to high',
                   'Price: high to low',
                 ]}
-                onChange={(v) => b.update({'d-sort': v})}
+                onChange={(v) => b.update({sort: v, 'd-sort': v})}
               />
               <Button
                 variant="outline"
@@ -648,7 +699,30 @@ function DiamondSelection() {
 
 function SettingSelection() {
   const b = useRingBuilder();
-  const settings = b.products.filter((p) => {
+  const selectedDiamond =
+    b.diamondSpecs?.kind === 'diamond' ? b.diamondSpecs.diamond : undefined;
+  const selectedDiamondShape = selectedDiamond?.shape;
+  const carriedDiamondShapes = (b.params.get('d-shape') || '')
+    .split(',')
+    .filter(Boolean);
+  const carriedDiamondFilters = [
+    ['Shapes', b.params.get('d-shape')],
+    [
+      'Carat',
+      b.params.get('d-caratMin') || b.params.get('d-caratMax')
+        ? `${b.params.get('d-caratMin') || 'any'}–${b.params.get('d-caratMax') || 'any'} ct`
+        : null,
+    ],
+    ['Color', b.params.get('d-color')],
+    ['Clarity', b.params.get('d-clarity')],
+    ['Cut', b.params.get('d-cut')],
+    ['Lab', b.params.get('d-lab')],
+    ['Report', b.params.get('d-report')],
+  ].filter(([, value]) => value);
+  const allSettings = b.products.filter(
+    (p) => readSpecs(p)?.kind === 'setting',
+  );
+  const settings = allSettings.filter((p) => {
     const s = readSpecs(p);
     return (
       s?.kind === 'setting' &&
@@ -702,6 +776,22 @@ function SettingSelection() {
       variantsFor(p).length
     );
   });
+  const sort = b.params.get('sort') || b.params.get('s-sort') || 'Featured';
+  results.sort((a, c) => {
+    if (sort === 'Price: low to high') {
+      return (
+        Number(variantsFor(a)[0]?.price.amount || Infinity) -
+        Number(variantsFor(c)[0]?.price.amount || Infinity)
+      );
+    }
+    if (sort === 'Price: high to low') {
+      return (
+        Number(variantsFor(c)[0]?.price.amount || 0) -
+        Number(variantsFor(a)[0]?.price.amount || 0)
+      );
+    }
+    return 0;
+  });
   const guided = b.params.get('s-mode') === 'guided';
   const step = Math.max(1, Math.min(4, Number(b.params.get('s-step')) || 1));
   return (
@@ -719,7 +809,7 @@ function SettingSelection() {
         </Button>
       </div>
       <Card className="mb-8 shadow-none">
-        <CardContent className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <CardContent className="grid gap-x-10 gap-y-8 md:grid-cols-2 xl:grid-cols-4">
           {(!guided || step === 1) && (
             <Chips
               label="Setting style"
@@ -742,11 +832,34 @@ function SettingSelection() {
             </div>
           )}
           {(!guided || step === 3) && (
-            <Chips
-              label="Diamond shape"
-              values={specs.flatMap((s) => s.compatibleShapes)}
-              filterKey="s-shape"
-            />
+            <div className="space-y-2">
+              <Chips
+                label="Diamond shape"
+                values={allSettings.flatMap((p) => {
+                  const s = readSpecs(p);
+                  return s?.kind === 'setting'
+                    ? s.setting.compatibleShapes
+                    : [];
+                })}
+                filterKey="s-shape"
+                selectedValues={[
+                  ...new Set([
+                    ...(b.params.get('s-shape')?.split(',').filter(Boolean) ||
+                      []),
+                    ...carriedDiamondShapes,
+                    ...(selectedDiamondShape ? [selectedDiamondShape] : []),
+                  ]),
+                ]}
+              />
+              {selectedDiamondShape && (
+                <p className="text-xs text-muted-foreground">
+                  Selected diamond:{' '}
+                  <span className="font-medium text-foreground">
+                    {selectedDiamondShape}
+                  </span>
+                </p>
+              )}
+            </div>
           )}
           {(!guided || step === 4) && (
             <Range
@@ -777,25 +890,66 @@ function SettingSelection() {
           )}
         </CardContent>
       </Card>
+      {selectedDiamond && (
+        <Card className="mb-8 border-primary/20 bg-primary/5 shadow-none">
+          <CardContent className="flex flex-wrap items-center gap-x-4 gap-y-2 py-4">
+            <p className="text-sm font-medium">Center stone carried forward</p>
+            {[
+              ['Shape', selectedDiamond.shape],
+              ['Carat', `${selectedDiamond.carat} ct`],
+              ['Color', selectedDiamond.colorGrade],
+              ['Clarity', selectedDiamond.clarityGrade],
+              ['Cut', selectedDiamond.cutGrade],
+              ['Lab', selectedDiamond.certification.lab],
+              ['Report', selectedDiamond.certification.certificateNumber],
+            ].map(([label, value]) => (
+              <span key={label} className="text-xs text-muted-foreground">
+                {label}: <strong className="text-foreground">{value}</strong>
+              </span>
+            ))}
+            {carriedDiamondFilters.length > 0 && (
+              <p className="basis-full border-t border-primary/15 pt-3 text-xs text-muted-foreground">
+                Active diamond filters:{' '}
+                {carriedDiamondFilters
+                  .map(([label, value]) => `${label} ${value}`)
+                  .join(' · ')}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
       <div className="mb-4 flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           {results.length} settings
           {b.diamond ? ' · compatible with your diamond' : ''}
         </p>
-        <Button
-          variant="ghost"
-          onClick={() =>
-            b.update(
-              Object.fromEntries(
-                [...b.params.keys()]
-                  .filter((k) => k.startsWith('s-'))
-                  .map((k): [string, null] => [k, null]),
-              ),
-            )
-          }
-        >
-          Reset filters
-        </Button>
+        <div className="flex items-end gap-2">
+          <Choice
+            label="Sort"
+            value={sort}
+            options={['Featured', 'Price: low to high', 'Price: high to low']}
+            onChange={(v) => b.update({sort: v, 's-sort': v})}
+          />
+          <Button
+            variant="ghost"
+            onClick={() =>
+              b.update(
+                Object.fromEntries(
+                  [...b.params.keys()]
+                    .filter(
+                      (k) =>
+                        k.startsWith('d-') ||
+                        k.startsWith('s-') ||
+                        k === 'sort',
+                    )
+                    .map((k): [string, null] => [k, null]),
+                ),
+              )
+            }
+          >
+            Reset filters
+          </Button>
+        </div>
       </div>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {results.map((p) => (
@@ -805,7 +959,8 @@ function SettingSelection() {
             onSelect={() =>
               b.update({
                 settingId: p.id,
-                variant: variantsFor(p)[0].id,
+                settingVariant: variantsFor(p)[0].id,
+                variant: null,
                 product: null,
                 size: null,
                 prong: null,
@@ -892,6 +1047,9 @@ function CompleteRing() {
       : b.specs?.kind === 'ring'
         ? [b.specs.ring.setting.bandWidthMm]
         : [];
+  const personalizationVariant = b.ring
+    ? b.variant
+    : b.settingVariant || b.variant;
   let invalid = '';
   try {
     validateConfiguration(b.products, b.params);
@@ -1001,7 +1159,8 @@ function CompleteRing() {
                   onClick={() =>
                     b.update({
                       product: null,
-                      variant: b.setting ? b.variant?.id || null : null,
+                      variant: b.ring ? b.variant?.id || null : null,
+                      settingVariant: b.settingVariant?.id || null,
                       step: 'diamond',
                     })
                   }
@@ -1035,13 +1194,13 @@ function CompleteRing() {
               </div>
             </CardHeader>
             <CardContent className="space-y-5">
-              {(b.variant?.selectedOptions || [])
+              {(personalizationVariant?.selectedOptions || [])
                 .filter((o) => o.value !== 'Default Title')
                 .map((option) => {
                   const available = b.selected!.variants.nodes.filter(
                     (v) =>
                       v.availableForSale &&
-                      b.variant!.selectedOptions.every(
+                      personalizationVariant!.selectedOptions.every(
                         (o) =>
                           o.name === option.name ||
                           v.selectedOptions.some(
@@ -1071,7 +1230,12 @@ function CompleteRing() {
                             (o) => o.name === option.name && o.value === value,
                           ),
                         );
-                        if (next) b.update({variant: next.id, metal: null});
+                        if (next)
+                          b.update({
+                            settingVariant: next.id,
+                            variant: b.ring ? b.variant?.id || null : null,
+                            metal: null,
+                          });
                       }}
                     />
                   );
@@ -1194,6 +1358,19 @@ function CompleteRing() {
 
 export function RingStudio() {
   const b = useRingBuilder();
+  useEffect(() => {
+    if (!b.ring || !b.diamond || !b.setting || b.params.has('diamondId'))
+      return;
+    b.update(
+      {
+        diamondId: b.diamond.id,
+        diamondVariant: b.diamondVariant?.id || null,
+        settingId: b.setting.id,
+        settingVariant: b.settingVariant?.id || null,
+      },
+      true,
+    );
+  }, [b.ring, b.diamond, b.setting, b.diamondVariant, b.settingVariant]);
   const step = ['diamond', 'settings', 'complete'].includes(
     b.params.get('step') || '',
   )

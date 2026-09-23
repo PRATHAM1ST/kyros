@@ -178,18 +178,41 @@ export function selectionFromUrl(
   const ring = products.find(
     (p) => p.handle === productHandle && readSpecs(p)?.kind === 'ring',
   );
-  const diamond = products.find(
+  let diamond = products.find(
     (p) =>
       (p.id === params.get('diamondId') ||
         p.handle === params.get('diamondId')) &&
       readSpecs(p)?.kind === 'diamond',
   );
-  const setting = products.find(
+  let setting = products.find(
     (p) =>
       (p.id === params.get('settingId') ||
         p.handle === params.get('settingId')) &&
       readSpecs(p)?.kind === 'setting',
   );
+  const ringSpecs = ring
+    ? readVariantSpecs(ring, getVariant(ring, params.get('variant')))
+    : null;
+  if (ring && ringSpecs?.kind === 'ring') {
+    diamond ||= products.find((p) => {
+      const s = readSpecs(p);
+      return (
+        s?.kind === 'diamond' &&
+        s.diamond.shape === ringSpecs.ring.diamond.shape &&
+        s.diamond.carat === ringSpecs.ring.diamond.carat &&
+        s.diamond.certification.certificateNumber ===
+          ringSpecs.ring.diamond.certification.certificateNumber
+      );
+    });
+    setting ||= products.find((p) => {
+      const s = readSpecs(p);
+      return (
+        s?.kind === 'setting' &&
+        s.setting.styleCategory === ringSpecs.ring.setting.styleCategory &&
+        s.setting.compatibleShapes.includes(ringSpecs.ring.diamond.shape)
+      );
+    });
+  }
   const selected = ring || setting;
   const metal = params.get('metal');
   const metalVariant = selected?.variants.nodes.find((v) =>
@@ -204,6 +227,10 @@ export function selectionFromUrl(
     params.get('variant') || metalVariant?.id,
   );
   const diamondVariant = getVariant(diamond, params.get('diamondVariant'));
+  const settingVariant = getVariant(
+    setting,
+    params.get('settingVariant') || (!ring ? params.get('variant') : null),
+  );
   const specs = selected ? readVariantSpecs(selected, variant) : null;
   const diamondSpecs = diamond
     ? readVariantSpecs(diamond, diamondVariant)
@@ -218,13 +245,14 @@ export function selectionFromUrl(
     ? variant
       ? [variant]
       : []
-    : [diamondVariant, variant].filter((v): v is RingVariant => !!v);
+    : [diamondVariant, settingVariant].filter((v): v is RingVariant => !!v);
   return {
     ring,
     diamond,
     setting,
     selected,
     variant,
+    settingVariant,
     diamondVariant,
     specs,
     diamondSpecs,
