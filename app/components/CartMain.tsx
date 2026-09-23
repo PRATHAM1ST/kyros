@@ -1,5 +1,6 @@
 import {useOptimisticCart} from '@shopify/hydrogen';
-import {Link} from 'react-router';
+import {Link, useFetchers} from 'react-router';
+import {ConfiguredRingCartItem} from './ConfiguredRingCartItem';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {CartLineItem, type CartLine} from '~/components/CartLineItem';
@@ -40,6 +41,15 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   // The useOptimisticCart hook applies pending actions to the cart
   // so the user immediately sees feedback when they modify the cart.
   const cart = useOptimisticCart(originalCart);
+  const fetchers = useFetchers();
+  const errors = fetchers.flatMap(
+    (f) => (f.data as {errors?: {message: string}[]})?.errors || [],
+  );
+  const groups = new Map<string, CartLine[]>();
+  for (const line of cart?.lines.nodes || []) {
+    const group = line.attributes.find((a) => a.key === '_ringId')?.value;
+    if (group) groups.set(group, [...(groups.get(group) || []), line]);
+  }
 
   const linesCount = Boolean(cart?.lines?.nodes?.length || 0);
   const withDiscount =
@@ -55,6 +65,15 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
       aria-label={layout === 'page' ? 'Cart page' : 'Cart drawer'}
     >
       <CartEmpty hidden={linesCount} layout={layout} />
+      {errors.map((error) => (
+        <p
+          role="alert"
+          key={error.message}
+          className="text-sm text-destructive"
+        >
+          {error.message}
+        </p>
+      ))}
       <div className="cart-details">
         <p id="cart-lines" className="sr-only">
           Line items
@@ -62,6 +81,16 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
         <div>
           <ul aria-labelledby="cart-lines">
             {(cart?.lines?.nodes ?? []).map((line) => {
+              const group = line.attributes.find(
+                (a) => a.key === '_ringId',
+              )?.value;
+              if (group)
+                return groups.get(group)![0].id === line.id ? (
+                  <ConfiguredRingCartItem
+                    key={group}
+                    lines={groups.get(group)!}
+                  />
+                ) : null;
               // we do not render non-parent lines at the root of the cart
               if (
                 'parentRelationship' in line &&

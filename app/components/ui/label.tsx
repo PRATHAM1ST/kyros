@@ -3,6 +3,8 @@ import { cn } from "cn"
 
 function Label({ className, ...props }: React.ComponentProps<"label">) {
   return (
+    // Association is supplied by callers through htmlFor or children.
+    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label
       data-slot="label"
       className={cn(

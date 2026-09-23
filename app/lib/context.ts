@@ -57,6 +57,11 @@ export async function createHydrogenRouterContext(
       i18n: getLocaleFromRequest(request),
       cart: {
         queryFragment: CART_QUERY_FRAGMENT,
+        // Return the lines we verify after adding a configured ring.
+        mutateFragment: CART_QUERY_FRAGMENT.replace(
+          'CartApiQuery on Cart',
+          'CartApiMutation on Cart',
+        ).replace('$numCartLines', '250'),
       },
     },
     additionalContext,

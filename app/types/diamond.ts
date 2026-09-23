@@ -20,7 +20,8 @@ export type CutGrade =
   | 'Super Ideal (Hearts & Arrows)'
   | 'Ideal'
   | 'Excellent'
-  | 'Very Good';
+  | 'Very Good'
+  | 'Good';
 
 export type ColorGrade =
   | 'D'
@@ -349,4 +350,3 @@ export type DiamondSortOption =
   | 'carat-desc'
   | 'carat-asc'
   | 'cut-desc';
-

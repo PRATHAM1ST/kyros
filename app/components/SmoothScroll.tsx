@@ -1,29 +1,24 @@
-import {useEffect} from 'react';
-import Lenis from 'lenis';
+import {useEffect, useState} from 'react';
+import {ReactLenis} from 'lenis/react';
 
 export function SmoothScroll() {
+  const [enabled, setEnabled] = useState(false);
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-    });
-
-    let rafId: number;
-    function raf(time: number) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-
-    rafId = requestAnimationFrame(raf);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setEnabled(!preference.matches);
+    update();
+    preference.addEventListener('change', update);
+    return () => preference.removeEventListener('change', update);
   }, []);
-
-  return null;
+  return enabled ? (
+    <ReactLenis
+      root
+      options={{
+        autoRaf: true,
+        smoothWheel: true,
+        prevent: (node) =>
+          !!node.closest('[role=dialog], [data-lenis-prevent]'),
+      }}
+    />
+  ) : null;
 }

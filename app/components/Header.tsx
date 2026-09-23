@@ -28,9 +28,19 @@ export function Header({
   const {menu} = header;
   return (
     <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end className="flex flex-col items-center">
-        <strong className="font-serif tracking-[0.25em] text-lg font-bold">KYROS</strong>
-        <span className="text-[9px] tracking-[0.3em] uppercase text-stone-500 font-serif">Haute Joaillerie</span>
+      <NavLink
+        prefetch="intent"
+        to="/"
+        style={activeLinkStyle}
+        end
+        className="flex shrink-0 flex-col items-center whitespace-nowrap"
+      >
+        <strong className="font-serif tracking-[0.25em] text-lg font-bold">
+          KYROS
+        </strong>
+        <span className="text-[9px] tracking-[0.3em] uppercase text-stone-500 font-serif">
+          Haute Joaillerie
+        </span>
       </NavLink>
       <HeaderMenu
         menu={menu}
@@ -58,7 +68,7 @@ export function HeaderMenu({
   const {close} = useAside();
 
   return (
-    <nav className={className} role="navigation z-50">
+    <nav className={className} aria-label="Main navigation">
       {viewport === 'mobile' && (
         <NavLink
           end
@@ -90,10 +100,19 @@ export function HeaderMenu({
         to="/custom-ring"
       >
         <span className="text-amber-700">✦</span>
-        <span>Custom Ring Atelier</span>
+        <span>Create your ring</span>
       </NavLink>
+      {viewport === 'mobile' && (
+        <NavLink to="/account" onClick={close}>
+          Your account
+        </NavLink>
+      )}
       {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
-        if (!item.url) return null;
+        if (
+          !item.url ||
+          ['Catalog', 'Home', 'Engagement Rings'].includes(item.title)
+        )
+          return null;
 
         // if the url is internal, we strip the domain
         const url =
@@ -127,7 +146,12 @@ function HeaderCtas({
   return (
     <nav className="header-ctas" role="navigation">
       <HeaderMenuMobileToggle />
-      <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
+      <NavLink
+        prefetch="intent"
+        to="/account"
+        style={activeLinkStyle}
+        className="hidden sm:block"
+      >
         <Suspense fallback="Sign in">
           <Await resolve={isLoggedIn} errorElement="Sign in">
             {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
@@ -146,11 +170,11 @@ function HeaderMenuMobileToggle() {
     <Button
       variant="ghost"
       size="icon-sm"
-      className="header-menu-mobile-toggle reset cursor-pointer"
+      className="header-menu-mobile-toggle cursor-pointer lg:hidden"
       onClick={() => open('mobile')}
       aria-label="Open navigation menu"
     >
-      <h3>☰</h3>
+      <span aria-hidden>☰</span>
     </Button>
   );
 }
@@ -189,7 +213,10 @@ function CartBadge({count}: {count: number}) {
       className="inline-flex items-center gap-1.5"
     >
       <span>Cart</span>
-      <Badge variant="secondary" className="h-4 px-1.5 text-[10px] font-mono min-w-4 text-center justify-center">
+      <Badge
+        variant="secondary"
+        className="h-4 px-1.5 text-[10px] font-mono min-w-4 text-center justify-center"
+      >
         <span aria-label={`(items: ${count})`}>{count}</span>
       </Badge>
     </a>
@@ -209,7 +236,14 @@ function CartToggle({cart}: Pick<HeaderProps, 'cart'>) {
 function CartBanner() {
   const originalCart = useAsyncValue() as CartApiQueryFragment | null;
   const cart = useOptimisticCart(originalCart);
-  return <CartBadge count={cart?.totalQuantity ?? 0} />;
+  const groups = new Set<string>();
+  const count = (cart?.lines.nodes || []).reduce((sum, line) => {
+    const group = line.attributes.find((a) => a.key === '_ringId')?.value;
+    if (group && groups.has(group)) return sum;
+    if (group) groups.add(group);
+    return sum + line.quantity;
+  }, 0);
+  return <CartBadge count={count} />;
 }
 
 const FALLBACK_HEADER_MENU = {

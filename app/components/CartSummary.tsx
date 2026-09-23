@@ -28,7 +28,9 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
       <dl role="group" className="cart-subtotal">
         <dt>Subtotal</dt>
         <dd>
-          {cart?.cost?.subtotalAmount?.amount ? (
+          {cart?.isOptimistic ? (
+            'Updating…'
+          ) : cart?.cost?.subtotalAmount?.amount ? (
             <Money data={cart?.cost?.subtotalAmount} />
           ) : (
             '-'
@@ -46,7 +48,13 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
         giftCardInputId={giftCardInputId}
       />
       <Separator className="my-3" />
-      <CartCheckoutActions checkoutUrl={cart?.checkoutUrl} />
+      {cart?.isOptimistic ? (
+        <Button className="w-full" disabled>
+          Updating bag…
+        </Button>
+      ) : (
+        <CartCheckoutActions checkoutUrl={cart?.checkoutUrl} />
+      )}
     </div>
   );
 }
@@ -86,6 +94,11 @@ function CartDiscounts({
 
   return (
     <section aria-label="Discounts">
+      {discountCodes?.some((code) => !code.applicable) && (
+        <p role="alert" className="mb-2 text-sm text-destructive">
+          This discount is not applicable to your bag.
+        </p>
+      )}
       {/* Have existing discount, display it with a remove option */}
       <dl hidden={!codes.length}>
         <div>
@@ -96,8 +109,16 @@ function CartDiscounts({
               role="group"
               aria-labelledby={discountsHeadingId}
             >
-              <code className="bg-stone-100 px-2 py-0.5 rounded text-xs">{codes?.join(', ')}</code>
-              <Button type="submit" variant="ghost" size="xs" aria-label="Remove discount" className="text-destructive hover:text-destructive">
+              <code className="bg-stone-100 px-2 py-0.5 rounded text-xs">
+                {codes?.join(', ')}
+              </code>
+              <Button
+                type="submit"
+                variant="ghost"
+                size="xs"
+                aria-label="Remove discount"
+                className="text-destructive hover:text-destructive"
+              >
                 Remove
               </Button>
             </div>
@@ -118,7 +139,12 @@ function CartDiscounts({
             placeholder="Discount code"
             className="h-8 text-xs bg-stone-50"
           />
-          <Button type="submit" variant="outline" size="sm" aria-label="Apply discount code">
+          <Button
+            type="submit"
+            variant="outline"
+            size="sm"
+            aria-label="Apply discount code"
+          >
             Apply
           </Button>
         </div>

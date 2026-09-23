@@ -5,7 +5,7 @@ import {CartForm} from '@shopify/hydrogen';
 import {CartMain} from '~/components/CartMain';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Cart`}];
+  return [{title: 'Your bag | KYROS'}];
 };
 
 export const headers: HeadersFunction = ({actionHeaders}) => actionHeaders;
@@ -28,12 +28,55 @@ export async function action({request, context}: Route.ActionArgs) {
     case CartForm.ACTIONS.LinesAdd:
       result = await cart.addLines(inputs.lines);
       break;
-    case CartForm.ACTIONS.LinesUpdate:
-      result = await cart.updateLines(inputs.lines);
+    case CartForm.ACTIONS.LinesUpdate: {
+      const current = await cart.get();
+      const updates = new Map(inputs.lines.map((line) => [line.id, line]));
+      for (const update of inputs.lines) {
+        const source = current?.lines.nodes.find(
+          (line) => line.id === update.id,
+        );
+        const group = source?.attributes.find(
+          (a) => a.key === '_ringId',
+        )?.value;
+        if (group)
+          for (const sibling of current?.lines.nodes || []) {
+            if (
+              sibling.attributes.some(
+                (a) => a.key === '_ringId' && a.value === group,
+              )
+            )
+              updates.set(sibling.id, {
+                id: sibling.id,
+                quantity: update.quantity,
+              });
+          }
+      }
+      result = await cart.updateLines([...updates.values()]);
       break;
-    case CartForm.ACTIONS.LinesRemove:
-      result = await cart.removeLines(inputs.lineIds);
+    }
+    case CartForm.ACTIONS.LinesRemove: {
+      const current = await cart.get();
+      const ids = new Set(inputs.lineIds);
+      const groups = new Set(
+        current?.lines.nodes
+          .filter((line) => ids.has(line.id))
+          .flatMap((line) =>
+            line.attributes
+              .filter((a) => a.key === '_ringId')
+              .map((a) => a.value),
+          ),
+      );
+      for (const line of current?.lines.nodes || []) {
+        if (
+          line.attributes.some(
+            (a) => a.key === '_ringId' && groups.has(a.value),
+          )
+        )
+          ids.add(line.id);
+      }
+      result = await cart.removeLines([...ids]);
       break;
+    }
     case CartForm.ACTIONS.DiscountCodesUpdate: {
       const formDiscountCode = inputs.discountCode;
 
@@ -78,7 +121,14 @@ export async function action({request, context}: Route.ActionArgs) {
   const {cart: cartResult, errors, warnings} = result;
 
   const redirectTo = formData.get('redirectTo') ?? null;
-  if (typeof redirectTo === 'string') {
+  if (errors?.length) status = 400;
+  if (
+    !errors?.length &&
+    typeof redirectTo === 'string' &&
+    redirectTo.startsWith('/') &&
+    !redirectTo.startsWith('//') &&
+    !redirectTo.includes('\\')
+  ) {
     status = 303;
     headers.set('Location', redirectTo);
   }

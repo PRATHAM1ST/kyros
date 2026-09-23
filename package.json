@@ -9,6 +9,8 @@
     "dev": "shopify hydrogen dev --codegen",
     "preview": "shopify hydrogen preview --build",
     "lint": "eslint --no-error-on-unmatched-pattern .",
+    "test": "node --test tests/ring-commerce.test.mjs",
+    "test:e2e": "playwright test",
     "typecheck": "react-router typegen && tsc --noEmit",
     "codegen": "shopify hydrogen codegen && react-router typegen"
   },
@@ -16,8 +18,8 @@
   "dependencies": {
     "@base-ui/react": "^1.8.0",
     "@fontsource-variable/figtree": "^5.3.0",
-    "@fontsource/source-sans-pro": "^5.3.0",
     "@fontsource/playfair-display": "^5.3.0",
+    "@fontsource/source-sans-pro": "^5.3.0",
     "@hugeicons/core-free-icons": "^4.3.5",
     "@hugeicons/react": "^1.1.10",
     "@shopify/hydrogen": "2026.4.5",
@@ -41,6 +43,7 @@
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
     "@graphql-codegen/cli": "5.0.2",
+    "@playwright/test": "^1.63.0",
     "@react-router/dev": "7.16.0",
     "@react-router/fs-routes": "7.16.0",
     "@shopify/cli": "3.93.2",

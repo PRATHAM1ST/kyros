@@ -36,10 +36,15 @@ export function AddToCartButton({
             size={size}
             className={className}
             onClick={onClick}
-            disabled={disabled ?? fetcher.state !== 'idle'}
+            disabled={disabled || fetcher.state !== 'idle' || lines.length === 0}
           >
-            {children}
+            {fetcher.state !== 'idle' ? 'Adding…' : children}
           </Button>
+          {fetcher.data?.errors?.length > 0 && (
+            <p role="alert" className="mt-2 text-sm text-destructive">
+              {fetcher.data.errors.map((error: {message: string}) => error.message).join(' ')}
+            </p>
+          )}
         </>
       )}
     </CartForm>

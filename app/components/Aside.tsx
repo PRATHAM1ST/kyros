@@ -1,11 +1,10 @@
 import {
-  createContext,
-  type ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
-import {useId} from 'react';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '~/components/ui/sheet';
+import {createContext, type ReactNode, useContext, useState} from 'react';
 
 type AsideType = 'search' | 'cart' | 'mobile' | 'closed';
 type AsideContextValue = {
@@ -34,43 +33,28 @@ export function Aside({
   heading: React.ReactNode;
 }) {
   const {type: activeType, close} = useAside();
-  const expanded = type === activeType;
-  const id = useId();
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    if (expanded) {
-      document.addEventListener(
-        'keydown',
-        function handler(event: KeyboardEvent) {
-          if (event.key === 'Escape') {
-            close();
-          }
-        },
-        {signal: abortController.signal},
-      );
-    }
-    return () => abortController.abort();
-  }, [close, expanded]);
-
   return (
-    <div
-      aria-modal
-      className={`overlay ${expanded ? 'expanded' : ''}`}
-      role="dialog"
-      aria-labelledby={id}
+    <Sheet
+      open={type === activeType}
+      onOpenChange={(open) => {
+        if (!open) close();
+      }}
     >
-      <button className="close-outside" onClick={close} />
-      <aside>
-        <header>
-          <h3 id={id}>{heading}</h3>
-          <button className="close reset" onClick={close} aria-label="Close">
-            &times;
-          </button>
-        </header>
-        <main>{children}</main>
-      </aside>
-    </div>
+      <SheetContent
+        className="data-[side=right]:w-full data-[side=right]:sm:max-w-lg"
+        aria-describedby={undefined}
+      >
+        <SheetHeader className="border-b">
+          <SheetTitle>{heading}</SheetTitle>
+        </SheetHeader>
+        <div
+          className="min-h-0 flex-1 overflow-y-auto px-6 pb-6"
+          data-lenis-prevent
+        >
+          {children}
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 

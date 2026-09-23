@@ -1,116 +1,155 @@
-import React from 'react';
+import {data, type HeadersFunction} from 'react-router';
 import type {Route} from './+types/custom-ring';
-import {useDiamondContext} from '~/context/DiamondFilterContext';
-import {DiamondRingStepper} from '~/components/diamond/DiamondRingStepper';
-import {DiamondSelectionStage} from '~/components/diamond/DiamondSelectionStage';
-import {SettingSelectionStage} from '~/components/diamond/SettingSelectionStage';
-import {CompleteRingStage} from '~/components/diamond/CompleteRingStage';
-import {Button} from '~/components/ui/button';
-
-export const meta: Route.MetaFunction = () => {
-  return [
-    {title: 'Custom Ring Atelier | KYROS Haute Joaillerie'},
-    {
-      name: 'description',
-      content:
-        'Design your bespoke diamond engagement ring in 3 systematic stages. Pair certified GIA/IGI loose diamonds with masterfully crafted platinum and multi-karat gold settings.',
-    },
-  ];
-};
-
-export async function loader({request}: Route.LoaderArgs) {
-  const url = new URL(request.url);
-  const step = url.searchParams.get('step') || 'diamond';
-  const diamondId = url.searchParams.get('diamondId') || null;
-  const settingId = url.searchParams.get('settingId') || null;
-
-  return {
-    initialStep: step,
-    initialDiamondId: diamondId,
-    initialSettingId: settingId,
-  };
+import {RingStudio} from '~/components/diamond/RingStudio';
+import {loadRingCatalog} from '~/lib/ring-catalog.server';
+import {sumPrices, validateConfiguration} from '~/lib/ring-commerce';
+export const meta: Route.MetaFunction = () => [
+  {title: 'Design your ring | KYROS'},
+];
+export const headers: HeadersFunction = ({actionHeaders}) => actionHeaders;
+export async function action({request, context}: Route.ActionArgs) {
+  const form = await request.formData();
+  const raw = form.get('configuration');
+  if (typeof raw !== 'string' || raw.length > 8000)
+    return data(
+      {errors: [{message: 'Invalid ring configuration.'}], success: false},
+      {status: 400},
+    );
+  try {
+    const params = new URLSearchParams(raw);
+    const products = await loadRingCatalog(context.storefront, true);
+    const selection = validateConfiguration(products, params);
+    const {ring, diamond, selected, variants, specs, diamondSpecs} = selection;
+    if (
+      Number(form.get('quotedTotal')) !== sumPrices(variants) ||
+      form.get('currency') !== variants[0].price.currencyCode
+    ) {
+      throw new Error(
+        'The price has changed. Review the refreshed total and try again.',
+      );
+    }
+    const d =
+      specs?.kind === 'ring'
+        ? specs.ring.diamond
+        : diamondSpecs?.kind === 'diamond'
+          ? diamondSpecs.diamond
+          : null;
+    const prong =
+      specs?.kind === 'setting'
+        ? specs.setting.prongStyles[0]
+        : specs?.kind === 'ring'
+          ? specs.ring.setting.prongStyle
+          : '';
+    const width =
+      specs?.kind === 'setting'
+        ? specs.setting.bandWidthsMm[0]
+        : specs?.kind === 'ring'
+          ? specs.ring.setting.bandWidthMm
+          : '';
+    const groupId = crypto.randomUUID();
+    const attributes = [
+      {key: '_ringId', value: groupId},
+      {key: 'Ring', value: selected!.title},
+      {key: 'Diamond', value: d ? d.carat + ' ct ' + d.shape : diamond!.title},
+      ...(d
+        ? [
+            {key: 'Origin', value: d.origin},
+            {
+              key: 'Table / depth / ratio',
+              value: `${d.proportions.tablePercentage}% / ${d.proportions.depthPercentage}% / ${d.measurements.ratio}`,
+            },
+            {
+              key: 'Polish / symmetry / fluorescence',
+              value: `${d.finish.polish} / ${d.finish.symmetry} / ${d.finish.fluorescence}`,
+            },
+            {
+              key: 'Measurements (mm)',
+              value: `${d.measurements.lengthMm} × ${d.measurements.widthMm} × ${d.measurements.depthMm}`,
+            },
+          ]
+        : []),
+      {
+        key: 'Color / clarity / cut',
+        value: [d?.colorGrade, d?.clarityGrade, d?.cutGrade].join(' / '),
+      },
+      {
+        key: 'Lab / report',
+        value: [d?.certification.lab, d?.certification.certificateNumber].join(
+          ' / ',
+        ),
+      },
+      {key: 'Ring size (US)', value: params.get('size')!},
+      {key: 'Prong', value: params.get('prong') || String(prong)},
+      {key: 'Band width (mm)', value: params.get('width') || String(width)},
+      ...(params.get('engraving')?.trim()
+        ? [{key: 'Engraving', value: params.get('engraving')!.trim()}]
+        : []),
+    ];
+    const result = await context.cart.addLines(
+      variants.map((v, i) => ({
+        merchandiseId: v.id,
+        quantity: 1,
+        attributes: [
+          ...attributes,
+          {
+            key: 'Component',
+            value: ring
+              ? 'Complete ring'
+              : i === 0
+                ? 'Center diamond'
+                : 'Setting',
+          },
+        ],
+      })),
+    );
+    const headers = result.cart?.id
+      ? context.cart.setCartId(result.cart.id)
+      : new Headers();
+    headers.set('Cache-Control', 'no-store');
+    const errors = [
+      ...(result.errors || []),
+      ...(result.warnings || []).map((w) => ({message: w.message})),
+    ];
+    const added =
+      result.cart?.lines.nodes.filter((line) =>
+        line.attributes.some((a) => a.key === '_ringId' && a.value === groupId),
+      ) || [];
+    if (
+      errors.length ||
+      added.length !== variants.length ||
+      added.some((line) => line.quantity !== 1)
+    ) {
+      if (added.length)
+        await context.cart.removeLines(
+          added.map((line) => line.id),
+          {cartId: result.cart!.id},
+        );
+      if (!errors.length)
+        errors.push({
+          message: 'The complete ring could not be added. Please try again.',
+        });
+    }
+    return data(
+      {errors, success: errors.length === 0},
+      {status: errors.length ? 400 : 200, headers},
+    );
+  } catch (error) {
+    return data(
+      {
+        errors: [
+          {
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Unable to add this ring. Please try again.',
+          },
+        ],
+        success: false,
+      },
+      {status: 400},
+    );
+  }
 }
-
-export default function CustomRingRoute() {
-  const {
-    stage,
-    setStage,
-    selectedDiamond,
-    selectedSetting,
-    totalInvestment,
-    isCompleteReady,
-  } = useDiamondContext();
-
-  return (
-    <div className="custom-ring-builder-page bg-stone-100/40 min-h-screen pb-24">
-      {/* 1. Interactive 3-Stage Progress Stepper */}
-      <DiamondRingStepper />
-
-      {/* 2. Main Active Stage Workspace */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8">
-        {stage === 'diamond' && <DiamondSelectionStage />}
-        {stage === 'settings' && <SettingSelectionStage />}
-        {stage === 'complete' && <CompleteRingStage />}
-      </div>
-
-      {/* 3. Floating Bottom Navigation Bar (Persistent on scroll) */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 bg-white/95 backdrop-blur-md border-t border-stone-200 py-3 px-4 sm:px-6 shadow-lg">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div>
-              <span className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold block">
-                Total Custom Ring Investment
-              </span>
-              <span className="text-lg sm:text-xl font-serif font-bold text-stone-900 font-mono">
-                ${totalInvestment > 0 ? totalInvestment.toLocaleString() : '0'}
-              </span>
-            </div>
-
-            <div className="hidden sm:flex items-center space-x-2 text-xs text-stone-500 border-l border-stone-200 pl-4 font-serif">
-              <span>{selectedDiamond ? `✓ ${selectedDiamond.carat}ct ${selectedDiamond.shape}` : '○ No Diamond'}</span>
-              <span>•</span>
-              <span>{selectedSetting ? `✓ ${selectedSetting.title}` : '○ No Setting'}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            {stage === 'diamond' && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setStage('settings')}
-                className="text-xs uppercase tracking-wider font-semibold cursor-pointer border-stone-900 text-stone-900"
-              >
-                Skip to Settings &rarr;
-              </Button>
-            )}
-
-            {stage === 'settings' && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setStage('diamond')}
-                className="text-xs uppercase tracking-wider font-semibold cursor-pointer border-stone-900 text-stone-900"
-              >
-                &larr; Back to Diamonds
-              </Button>
-            )}
-
-            {isCompleteReady && stage !== 'complete' && (
-              <Button
-                type="button"
-                size="sm"
-                onClick={() => setStage('complete')}
-                className="bg-stone-950 hover:bg-stone-800 text-white text-xs uppercase tracking-widest font-semibold px-4 shadow cursor-pointer"
-              >
-                Finalize Ring &rarr;
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+export default function CustomRing() {
+  return <RingStudio />;
 }

@@ -377,110 +377,23 @@ export type FooterQuery = {
   >;
 };
 
-export type ShopifyDiamondProductFieldsFragment = Pick<
-  StorefrontAPI.Product,
-  | 'id'
-  | 'title'
-  | 'handle'
-  | 'description'
-  | 'descriptionHtml'
-  | 'vendor'
-  | 'productType'
-  | 'tags'
-> & {
-  options: Array<Pick<StorefrontAPI.ProductOption, 'id' | 'name' | 'values'>>;
-  featuredImage?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
-  >;
-  images: {
-    nodes: Array<
-      Pick<StorefrontAPI.Image, 'id' | 'url' | 'altText' | 'width' | 'height'>
-    >;
-  };
-  priceRange: {
-    minVariantPrice: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-  };
-  variants: {
-    nodes: Array<
-      Pick<
-        StorefrontAPI.ProductVariant,
-        'id' | 'title' | 'availableForSale'
-      > & {
-        price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-        compareAtPrice?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
-        >;
-        selectedOptions: Array<
-          Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
-        >;
-        image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, 'url'>>;
-      }
-    >;
-  };
-  shape?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  carat?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  cutGrade?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  colorGrade?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  clarityGrade?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  origin?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  certLab?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  certNumber?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  laserInscription?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.Metafield, 'value'>
-  >;
-  tablePercentage?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  depthPercentage?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  crownAngle?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  pavilionAngle?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  polish?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  symmetry?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  fluorescence?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  measurementsMm?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  ratio?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  settingStyle?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  bandWidthMm?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  prongStyle?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  fullSpecs?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-};
-
-export type AllDiamondsFromShopifyQueryVariables = StorefrontAPI.Exact<{
-  [key: string]: never;
+export type RingCommerceProductsQueryVariables = StorefrontAPI.Exact<{
+  cursor?: StorefrontAPI.InputMaybe<StorefrontAPI.Scalars['String']['input']>;
 }>;
 
-export type AllDiamondsFromShopifyQuery = {
+export type RingCommerceProductsQuery = {
   products: {
+    pageInfo: Pick<StorefrontAPI.PageInfo, 'hasNextPage' | 'endCursor'>;
     nodes: Array<
       Pick<
         StorefrontAPI.Product,
-        | 'id'
-        | 'title'
-        | 'handle'
-        | 'description'
-        | 'descriptionHtml'
-        | 'vendor'
-        | 'productType'
-        | 'tags'
+        'id' | 'handle' | 'title' | 'description' | 'productType' | 'tags'
       > & {
-        options: Array<
-          Pick<StorefrontAPI.ProductOption, 'id' | 'name' | 'values'>
-        >;
         featuredImage?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+          Pick<StorefrontAPI.Image, 'url' | 'altText'>
         >;
-        images: {
-          nodes: Array<
-            Pick<
-              StorefrontAPI.Image,
-              'id' | 'url' | 'altText' | 'width' | 'height'
-            >
-          >;
-        };
-        priceRange: {
-          minVariantPrice: Pick<
-            StorefrontAPI.MoneyV2,
-            'amount' | 'currencyCode'
-          >;
-        };
+        images: {nodes: Array<Pick<StorefrontAPI.Image, 'url' | 'altText'>>};
+        specs?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
         variants: {
           nodes: Array<
             Pick<
@@ -488,160 +401,21 @@ export type AllDiamondsFromShopifyQuery = {
               'id' | 'title' | 'availableForSale'
             > & {
               price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-              compareAtPrice?: StorefrontAPI.Maybe<
-                Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
-              >;
               selectedOptions: Array<
                 Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
               >;
-              image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, 'url'>>;
+              image?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.Image, 'url' | 'altText'>
+              >;
+              specs?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.Metafield, 'value'>
+              >;
             }
           >;
         };
-        shape?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-        carat?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-        cutGrade?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-        colorGrade?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        clarityGrade?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        origin?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-        certLab?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-        certNumber?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        laserInscription?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        tablePercentage?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        depthPercentage?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        crownAngle?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        pavilionAngle?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        polish?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-        symmetry?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-        fluorescence?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        measurementsMm?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        ratio?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-        settingStyle?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        bandWidthMm?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        prongStyle?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        fullSpecs?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
       }
     >;
   };
-};
-
-export type SingleDiamondByHandleQueryVariables = StorefrontAPI.Exact<{
-  handle: StorefrontAPI.Scalars['String']['input'];
-}>;
-
-export type SingleDiamondByHandleQuery = {
-  product?: StorefrontAPI.Maybe<
-    Pick<
-      StorefrontAPI.Product,
-      | 'id'
-      | 'title'
-      | 'handle'
-      | 'description'
-      | 'descriptionHtml'
-      | 'vendor'
-      | 'productType'
-      | 'tags'
-    > & {
-      options: Array<
-        Pick<StorefrontAPI.ProductOption, 'id' | 'name' | 'values'>
-      >;
-      featuredImage?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
-      >;
-      images: {
-        nodes: Array<
-          Pick<
-            StorefrontAPI.Image,
-            'id' | 'url' | 'altText' | 'width' | 'height'
-          >
-        >;
-      };
-      priceRange: {
-        minVariantPrice: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-      };
-      variants: {
-        nodes: Array<
-          Pick<
-            StorefrontAPI.ProductVariant,
-            'id' | 'title' | 'availableForSale'
-          > & {
-            price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-            compareAtPrice?: StorefrontAPI.Maybe<
-              Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
-            >;
-            selectedOptions: Array<
-              Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
-            >;
-            image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, 'url'>>;
-          }
-        >;
-      };
-      shape?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      carat?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      cutGrade?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      colorGrade?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      clarityGrade?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Metafield, 'value'>
-      >;
-      origin?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      certLab?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      certNumber?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      laserInscription?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Metafield, 'value'>
-      >;
-      tablePercentage?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Metafield, 'value'>
-      >;
-      depthPercentage?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Metafield, 'value'>
-      >;
-      crownAngle?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      pavilionAngle?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Metafield, 'value'>
-      >;
-      polish?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      symmetry?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      fluorescence?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Metafield, 'value'>
-      >;
-      measurementsMm?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Metafield, 'value'>
-      >;
-      ratio?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      settingStyle?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Metafield, 'value'>
-      >;
-      bandWidthMm?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      prongStyle?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      fullSpecs?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    }
-  >;
 };
 
 export type ArticleQueryVariables = StorefrontAPI.Exact<{
@@ -763,6 +537,14 @@ export type BlogsQuery = {
   };
 };
 
+export type RingCollectionQueryVariables = StorefrontAPI.Exact<{
+  handle: StorefrontAPI.Scalars['String']['input'];
+}>;
+
+export type RingCollectionQuery = {
+  collection?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Collection, 'handle'>>;
+};
+
 export type CollectionFragment = Pick<
   StorefrontAPI.Collection,
   'id' | 'title' | 'handle'
@@ -802,6 +584,22 @@ export type StoreCollectionsQuery = {
       'hasNextPage' | 'hasPreviousPage' | 'startCursor' | 'endCursor'
     >;
   };
+};
+
+export type CatalogCollectionQueryVariables = StorefrontAPI.Exact<{
+  handle: StorefrontAPI.Scalars['String']['input'];
+  cursor?: StorefrontAPI.InputMaybe<StorefrontAPI.Scalars['String']['input']>;
+}>;
+
+export type CatalogCollectionQuery = {
+  collection?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Collection, 'title'> & {
+      products: {
+        nodes: Array<Pick<StorefrontAPI.Product, 'id'>>;
+        pageInfo: Pick<StorefrontAPI.PageInfo, 'hasNextPage' | 'endCursor'>;
+      };
+    }
+  >;
 };
 
 export type PageQueryVariables = StorefrontAPI.Exact<{
@@ -1108,13 +906,9 @@ interface GeneratedQueryTypes {
     return: FooterQuery;
     variables: FooterQueryVariables;
   };
-  '#graphql\n  query AllDiamondsFromShopify {\n    products(first: 50, query: "product_type:\'Diamond Engagement Ring\'") {\n      nodes {\n        ...ShopifyDiamondProductFields\n      }\n    }\n  }\n  #graphql\n  fragment ShopifyDiamondProductFields on Product {\n    id\n    title\n    handle\n    description\n    descriptionHtml\n    vendor\n    productType\n    tags\n    options {\n      id\n      name\n      values\n    }\n    featuredImage {\n      url\n      altText\n      width\n      height\n    }\n    images(first: 12) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 20) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n        selectedOptions {\n          name\n          value\n        }\n        image {\n          url\n        }\n      }\n    }\n    shape: metafield(namespace: "diamond_specs", key: "shape") { value }\n    carat: metafield(namespace: "diamond_specs", key: "carat") { value }\n    cutGrade: metafield(namespace: "diamond_specs", key: "cut_grade") { value }\n    colorGrade: metafield(namespace: "diamond_specs", key: "color_grade") { value }\n    clarityGrade: metafield(namespace: "diamond_specs", key: "clarity_grade") { value }\n    origin: metafield(namespace: "diamond_specs", key: "origin") { value }\n    certLab: metafield(namespace: "diamond_specs", key: "cert_lab") { value }\n    certNumber: metafield(namespace: "diamond_specs", key: "cert_number") { value }\n    laserInscription: metafield(namespace: "diamond_specs", key: "laser_inscription") { value }\n    tablePercentage: metafield(namespace: "diamond_specs", key: "table_percentage") { value }\n    depthPercentage: metafield(namespace: "diamond_specs", key: "depth_percentage") { value }\n    crownAngle: metafield(namespace: "diamond_specs", key: "crown_angle") { value }\n    pavilionAngle: metafield(namespace: "diamond_specs", key: "pavilion_angle") { value }\n    polish: metafield(namespace: "diamond_specs", key: "polish") { value }\n    symmetry: metafield(namespace: "diamond_specs", key: "symmetry") { value }\n    fluorescence: metafield(namespace: "diamond_specs", key: "fluorescence") { value }\n    measurementsMm: metafield(namespace: "diamond_specs", key: "measurements_mm") { value }\n    ratio: metafield(namespace: "diamond_specs", key: "ratio") { value }\n    settingStyle: metafield(namespace: "diamond_specs", key: "setting_style") { value }\n    bandWidthMm: metafield(namespace: "diamond_specs", key: "band_width_mm") { value }\n    prongStyle: metafield(namespace: "diamond_specs", key: "prong_style") { value }\n    fullSpecs: metafield(namespace: "diamond_specs", key: "full_specs_json") { value }\n  }\n\n': {
-    return: AllDiamondsFromShopifyQuery;
-    variables: AllDiamondsFromShopifyQueryVariables;
-  };
-  '#graphql\n  query SingleDiamondByHandle($handle: String!) {\n    product(handle: $handle) {\n      ...ShopifyDiamondProductFields\n    }\n  }\n  #graphql\n  fragment ShopifyDiamondProductFields on Product {\n    id\n    title\n    handle\n    description\n    descriptionHtml\n    vendor\n    productType\n    tags\n    options {\n      id\n      name\n      values\n    }\n    featuredImage {\n      url\n      altText\n      width\n      height\n    }\n    images(first: 12) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 20) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n        selectedOptions {\n          name\n          value\n        }\n        image {\n          url\n        }\n      }\n    }\n    shape: metafield(namespace: "diamond_specs", key: "shape") { value }\n    carat: metafield(namespace: "diamond_specs", key: "carat") { value }\n    cutGrade: metafield(namespace: "diamond_specs", key: "cut_grade") { value }\n    colorGrade: metafield(namespace: "diamond_specs", key: "color_grade") { value }\n    clarityGrade: metafield(namespace: "diamond_specs", key: "clarity_grade") { value }\n    origin: metafield(namespace: "diamond_specs", key: "origin") { value }\n    certLab: metafield(namespace: "diamond_specs", key: "cert_lab") { value }\n    certNumber: metafield(namespace: "diamond_specs", key: "cert_number") { value }\n    laserInscription: metafield(namespace: "diamond_specs", key: "laser_inscription") { value }\n    tablePercentage: metafield(namespace: "diamond_specs", key: "table_percentage") { value }\n    depthPercentage: metafield(namespace: "diamond_specs", key: "depth_percentage") { value }\n    crownAngle: metafield(namespace: "diamond_specs", key: "crown_angle") { value }\n    pavilionAngle: metafield(namespace: "diamond_specs", key: "pavilion_angle") { value }\n    polish: metafield(namespace: "diamond_specs", key: "polish") { value }\n    symmetry: metafield(namespace: "diamond_specs", key: "symmetry") { value }\n    fluorescence: metafield(namespace: "diamond_specs", key: "fluorescence") { value }\n    measurementsMm: metafield(namespace: "diamond_specs", key: "measurements_mm") { value }\n    ratio: metafield(namespace: "diamond_specs", key: "ratio") { value }\n    settingStyle: metafield(namespace: "diamond_specs", key: "setting_style") { value }\n    bandWidthMm: metafield(namespace: "diamond_specs", key: "band_width_mm") { value }\n    prongStyle: metafield(namespace: "diamond_specs", key: "prong_style") { value }\n    fullSpecs: metafield(namespace: "diamond_specs", key: "full_specs_json") { value }\n  }\n\n': {
-    return: SingleDiamondByHandleQuery;
-    variables: SingleDiamondByHandleQueryVariables;
+  '#graphql\n  query RingCommerceProducts($cursor: String) {\n    products(first: 50, after: $cursor, query: "product_type:\'Diamond Engagement Ring\' OR product_type:\'Loose Diamond\' OR product_type:\'Ring Setting\'") {\n      pageInfo {hasNextPage endCursor}\n      nodes {\n        id handle title description productType tags\n        featuredImage {url altText}\n        images(first: 8) {nodes {url altText}}\n        specs: metafield(namespace: "diamond_specs", key: "full_specs_json") {value}\n        variants(first: 250) {\n          nodes {id title availableForSale price {amount currencyCode} selectedOptions {name value} image {url altText} specs: metafield(namespace: "diamond_specs", key: "full_specs_json") {value}}\n        }\n      }\n    }\n  }\n': {
+    return: RingCommerceProductsQuery;
+    variables: RingCommerceProductsQueryVariables;
   };
   '#graphql\n  query Article(\n    $articleHandle: String!\n    $blogHandle: String!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    blog(handle: $blogHandle) {\n      handle\n      articleByHandle(handle: $articleHandle) {\n        handle\n        title\n        contentHtml\n        publishedAt\n        author: authorV2 {\n          name\n        }\n        image {\n          id\n          altText\n          url\n          width\n          height\n        }\n        seo {\n          description\n          title\n        }\n      }\n    }\n  }\n': {
     return: ArticleQuery;
@@ -1128,9 +922,17 @@ interface GeneratedQueryTypes {
     return: BlogsQuery;
     variables: BlogsQueryVariables;
   };
+  '#graphql\n    query RingCollection($handle: String!) {\n      collection(handle: $handle) {handle}\n    }\n  ': {
+    return: RingCollectionQuery;
+    variables: RingCollectionQueryVariables;
+  };
   '#graphql\n  fragment Collection on Collection {\n    id\n    title\n    handle\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n  }\n  query StoreCollections(\n    $country: CountryCode\n    $endCursor: String\n    $first: Int\n    $language: LanguageCode\n    $last: Int\n    $startCursor: String\n  ) @inContext(country: $country, language: $language) {\n    collections(\n      first: $first,\n      last: $last,\n      before: $startCursor,\n      after: $endCursor\n    ) {\n      nodes {\n        ...Collection\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n': {
     return: StoreCollectionsQuery;
     variables: StoreCollectionsQueryVariables;
+  };
+  '#graphql\n      query CatalogCollection($handle: String!, $cursor: String) {\n        collection(handle: $handle) {title products(first: 250, after: $cursor) {nodes {id} pageInfo {hasNextPage endCursor}}}\n      }\n    ': {
+    return: CatalogCollectionQuery;
+    variables: CatalogCollectionQueryVariables;
   };
   '#graphql\n  query Page(\n    $language: LanguageCode,\n    $country: CountryCode,\n    $handle: String!\n  )\n  @inContext(language: $language, country: $country) {\n    page(handle: $handle) {\n      handle\n      id\n      title\n      body\n      seo {\n        description\n        title\n      }\n    }\n  }\n': {
     return: PageQuery;

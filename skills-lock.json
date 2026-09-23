@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "shopify-admin": {
+      "source": "Shopify/shopify-ai-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/shopify-admin/SKILL.md",
+      "computedHash": "35df9e5e5ec0431c383459de9783c303c5e738e8e16198c6c8393012aeed15d2"
+    },
+    "shopify-custom-data": {
+      "source": "Shopify/shopify-ai-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/shopify-custom-data/SKILL.md",
+      "computedHash": "12b972f1f8767d224978ab2218b9b154c66f4010483d6bdda2eb4e5e103489e9"
+    },
+    "shopify-hydrogen": {
+      "source": "Shopify/shopify-ai-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/shopify-hydrogen/SKILL.md",
+      "computedHash": "164e80d8e79d335ab9c652c2113b3f38f1a2bd11d4d6e92a0975f4d92fd5ec07"
+    },
+    "shopify-use-shopify-cli": {
+      "source": "Shopify/shopify-ai-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/shopify-use-shopify-cli/SKILL.md",
+      "computedHash": "3b245167941dac32036e077cbf9e90a4cae2509016eb79c1e0e2a7d85bedd1b8"
+    }
+  }
+}
